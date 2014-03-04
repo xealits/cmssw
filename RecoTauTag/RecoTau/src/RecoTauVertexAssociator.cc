@@ -205,7 +205,7 @@ RecoTauVertexAssociator::~RecoTauVertexAssociator()
 void RecoTauVertexAssociator::setEvent(const edm::Event& evt) 
 {
   edm::Handle<reco::VertexCollection> vertices;
-  evt.getByToken(vxToken, vertices);
+  evt.getByToken(vxToken_, vertices);
   selectedVertices_.clear();
   selectedVertices_.reserve(vertices->size());
   for ( size_t idxVertex = 0; idxVertex < vertices->size(); ++idxVertex ) {
