@@ -49,6 +49,7 @@ class PFRecoTauDiscriminationAgainstMuon2 : public PFTauDiscriminationProducerBa
       Muons_token = consumes<reco::MuonCollection>(srcMuons_);
       dRmuonMatch_ = cfg.getParameter<double>("dRmuonMatch");
       dRmuonMatchLimitedToJetArea_ = cfg.getParameter<bool>("dRmuonMatchLimitedToJetArea");
+      minPtMatchedMuon_ = cfg.getParameter<double>("minPtMatchedMuon");
     }
     typedef std::vector<int> vint;
     maskMatchesDT_  = cfg.getParameter<vint>("maskMatchesDT");
@@ -79,6 +80,7 @@ class PFRecoTauDiscriminationAgainstMuon2 : public PFTauDiscriminationProducerBa
   edm::EDGetTokenT<reco::MuonCollection> Muons_token;
   double dRmuonMatch_;
   bool dRmuonMatchLimitedToJetArea_;
+  double minPtMatchedMuon_;
   std::vector<int> maskMatchesDT_;
   std::vector<int> maskMatchesCSC_;
   std::vector<int> maskMatchesRPC_;
@@ -94,7 +96,6 @@ void PFRecoTauDiscriminationAgainstMuon2::beginEvent(const edm::Event& evt, cons
 {
   if ( srcMuons_.label() != "" ) {
     evt.getByToken(Muons_token, muons_);
-    //evt.getByLabel(srcMuons_, muons_);
   }
 }
 
@@ -187,6 +188,10 @@ double PFRecoTauDiscriminationAgainstMuon2::discriminate(const reco::PFTauRef& p
     for ( size_t idxMuon = 0; idxMuon < numMuons; ++idxMuon ) {
       reco::MuonRef muon(muons_, idxMuon);
       if ( verbosity_ ) std::cout << "muon #" << muon.key() << ": Pt = " << muon->pt() << ", eta = " << muon->eta() << ", phi = " << muon->phi() << std::endl;
+      if ( !(muon->pt() > minPtMatchedMuon_) ) {
+	if ( verbosity_ ) std::cout << " fails Pt cut --> skipping it." << std::endl;
+	continue;
+      }
       if ( pfLeadChargedHadron.isNonnull() && pfLeadChargedHadron->muonRef().isNonnull() && muon == pfLeadChargedHadron->muonRef() ) {	
 	if ( verbosity_ ) std::cout << " matches muonRef of tau --> skipping it." << std::endl;
 	continue;
