@@ -525,11 +525,34 @@ hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits = hpsPFTauDiscrimin
     storeRawSumPt = cms.bool(True)
 )
 
+hpsPFTauDiscriminationByLooseCombinedIsolationRhoSumPtCorr3Hits = hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits.clone(
+    applyDeltaBetaCorrection = cms.bool(False),
+    applyRhoCorrection = cms.bool(True)
+)
+hpsPFTauDiscriminationByMediumCombinedIsolationRhoSumPtCorr3Hits = hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits.clone(
+    applyDeltaBetaCorrection = cms.bool(False),
+    applyRhoCorrection = cms.bool(True)
+)
+hpsPFTauDiscriminationByTightCombinedIsolationRhoSumPtCorr3Hits = hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits.clone(
+    applyDeltaBetaCorrection = cms.bool(False),
+    applyRhoCorrection = cms.bool(True)
+)
+
+hpsPFTauDiscriminationByRawCombinedIsolationRhoSumPtCorr3Hits = hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits.clone(
+    applyDeltaBetaCorrection = cms.bool(False),
+    applyRhoCorrection = cms.bool(True)
+)
+
+
 hpsPFTauDiscriminationByCombinedIsolationSeqDBSumPtCorr3Hits = cms.Sequence(
     hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits*
     hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits*
     hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits*
-    hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits
+    hpsPFTauDiscriminationByRawCombinedIsolationDBSumPtCorr3Hits*
+    hpsPFTauDiscriminationByLooseCombinedIsolationRhoSumPtCorr3Hits*
+    hpsPFTauDiscriminationByMediumCombinedIsolationRhoSumPtCorr3Hits*
+    hpsPFTauDiscriminationByTightCombinedIsolationRhoSumPtCorr3Hits*
+    hpsPFTauDiscriminationByRawCombinedIsolationRhoSumPtCorr3Hits
 )
 
 # Define the HPS selection discriminator used in cleaning
