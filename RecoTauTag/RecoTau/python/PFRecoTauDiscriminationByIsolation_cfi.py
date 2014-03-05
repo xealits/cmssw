@@ -49,7 +49,7 @@ pfRecoTauDiscriminationByIsolation = cms.EDProducer("PFRecoTauDiscriminationByIs
 
     # Rho corrections
     applyRhoCorrection = cms.bool(False),
-    rhoProducer = cms.InputTag("kt6PFJets", "rho"),
+    rhoProducer = cms.InputTag("fixedGridRhoFastjetAll"),
     rhoConeSize = cms.double(0.5),
     rhoUEOffsetCorrection = cms.double(1.0)
 )
