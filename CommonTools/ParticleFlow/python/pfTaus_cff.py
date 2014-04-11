@@ -25,7 +25,7 @@ selection is constructed by:
 '''
 
 
-# tau input collection                                                                                                                                                                                                               
+# tau input collection
 pfTauInputJets = tauInputJets.clone()
 pfTauInputJets.src = cms.InputTag("ak5PFJets")
 
@@ -34,13 +34,14 @@ pfTauInputJets.src = cms.InputTag("ak5PFJets")
 
 pfJetsLegacyHPSPiZeros = ak5PFJetsLegacyHPSPiZeros.clone()
 
-pfJetsLegacyHPSPiZeros.jetSrc = cms.InputTag("pfTauInputJets")
+pfJetsLegacyHPSPiZeros.jetSrc = 'pfTauInputJets'
 
 pfTauPFJets08Region = recoTauAK5PFJets08Region.clone()
 pfTauPFJetsRecoTauChargedHadrons = ak5PFJetsRecoTauChargedHadrons.clone()
-pfTauPFJets08Region.src = cms.InputTag("pfTauInputJets")
+pfTauPFJets08Region.src = 'pfTauInputJets'
 pfTauPFJets08Region.pfSrc = cms.InputTag("particleFlow")
 pfTauPFJetsRecoTauChargedHadrons.jetRegionSrc = 'pfTauPFJets08Region'
+pfTauPFJetsRecoTauChargedHadrons.jetSrc = 'pfTauInputJets'
 
 pfTauTagInfoProducer = pfRecoTauTagInfoProducer.clone()
 pfTauTagInfoProducer.PFCandidateProducer = ak5PFJets.src
@@ -50,7 +51,7 @@ pfTauTagInfoProducer.PFJetTracksAssociatorProducer = 'pfJetTracksAssociatorAtVer
 # Clone tau producer
 pfTausProducer = hpsPFTauProducer.clone()
 pfTausCombiner = combinatoricRecoTaus.clone()
-pfTausCombiner.jetSrc= cms.InputTag("pfTauInputJets") #  cms.InputTag("ak5PFJets")
+pfTausCombiner.jetSrc= 'pfTauInputJets'
 pfTausCombiner.piZeroSrc= "pfJetsLegacyHPSPiZeros"
 pfTausCombiner.jetRegionSrc='pfTauPFJets08Region'
 pfTausCombiner.chargedHadronSrc='pfTauPFJetsRecoTauChargedHadrons'
