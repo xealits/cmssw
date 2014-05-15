@@ -5,7 +5,7 @@ import RecoTauTag.RecoTau.RecoTauPiZeroQualityPlugins_cfi as ranking
 from RecoTauTag.RecoTau.PFRecoTauPFJetInputs_cfi import PFRecoTauPFJetInputs
 
 
-ak4PFJetsRecoTauGreedyPiZeros = cms.EDProducer(
+ak5PFJetsRecoTauGreedyPiZeros = cms.EDProducer(
     "RecoTauPiZeroProducer",
     jetSrc = PFRecoTauPFJetInputs.inputJetCollection,
     massHypothesis = cms.double(0.136),
@@ -18,7 +18,7 @@ ak4PFJetsRecoTauGreedyPiZeros = cms.EDProducer(
     ),
 )
 
-ak4PFJetsRecoTauPiZeros = cms.EDProducer(
+ak5PFJetsRecoTauPiZeros = cms.EDProducer(
     "RecoTauPiZeroProducer",
     jetSrc = PFRecoTauPFJetInputs.inputJetCollection,
     massHypothesis = cms.double(0.136),
@@ -35,7 +35,7 @@ ak4PFJetsRecoTauPiZeros = cms.EDProducer(
     ),
 )
 
-ak4PFJetsLegacyTaNCPiZeros = cms.EDProducer(
+ak5PFJetsLegacyTaNCPiZeros = cms.EDProducer(
     "RecoTauPiZeroProducer",
     jetSrc = PFRecoTauPFJetInputs.inputJetCollection,
     massHypothesis = cms.double(0.136),
@@ -49,7 +49,7 @@ ak4PFJetsLegacyTaNCPiZeros = cms.EDProducer(
     ),
 )
 
-ak4PFJetsLegacyHPSPiZeros = cms.EDProducer(
+ak5PFJetsLegacyHPSPiZeros = cms.EDProducer(
     "RecoTauPiZeroProducer",
     jetSrc = PFRecoTauPFJetInputs.inputJetCollection,
     massHypothesis = cms.double(0.136),

@@ -16,9 +16,9 @@ TCTauAlgorithm::TCTauAlgorithm(){
 	init();
 }
 
-TCTauAlgorithm::TCTauAlgorithm(const edm::ParameterSet& iConfig, edm::ConsumesCollector &&iC){
+TCTauAlgorithm::TCTauAlgorithm(const edm::ParameterSet& iConfig){
         init();
-	inputConfig(iConfig, iC);
+	inputConfig(iConfig);
 }
 
 TCTauAlgorithm::~TCTauAlgorithm(){}
@@ -37,7 +37,7 @@ void TCTauAlgorithm::init(){
 	algoComponentUsed = 0;
 }
 
-void TCTauAlgorithm::inputConfig(const edm::ParameterSet& iConfig, edm::ConsumesCollector &iC){
+void TCTauAlgorithm::inputConfig(const edm::ParameterSet& iConfig){
 
 	etCaloOverTrackMin = iConfig.getParameter<double>("EtCaloOverTrackMin");
 	etCaloOverTrackMax = iConfig.getParameter<double>("EtCaloOverTrackMax");
@@ -54,7 +54,7 @@ void TCTauAlgorithm::inputConfig(const edm::ParameterSet& iConfig, edm::Consumes
 	HFRecHits_input    = iConfig.getParameter<edm::InputTag>("HFRecHitCollection");
 
 	edm::ParameterSet pset = iConfig.getParameter<edm::ParameterSet>("TrackAssociatorParameters");
-  	trackAssociatorParameters.loadParameters( pset, iC );
+  	trackAssociatorParameters.loadParameters( pset );
 
 	dropCaloJets       = iConfig.getUntrackedParameter<bool>("DropCaloJets",false);
 	dropRejected       = iConfig.getUntrackedParameter<bool>("DropRejectedJets",true);

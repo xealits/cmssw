@@ -16,7 +16,7 @@ class CaloRecoTauDiscriminationAgainstHadronicJets : public CaloTauDiscriminatio
     explicit CaloRecoTauDiscriminationAgainstHadronicJets(
         const edm::ParameterSet& iConfig)
         :CaloTauDiscriminationProducerBase(iConfig){
-          tcTauAlgorithm = new TCTauAlgorithm(iConfig, consumesCollector());
+          tcTauAlgorithm = new TCTauAlgorithm(iConfig);
         }
     ~CaloRecoTauDiscriminationAgainstHadronicJets(){}
     double discriminate(const CaloTauRef& theCaloTauRef) override;

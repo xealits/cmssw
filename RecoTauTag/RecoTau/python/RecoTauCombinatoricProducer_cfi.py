@@ -90,9 +90,9 @@ combinatoricRecoTaus = cms.EDProducer("RecoTauProducer",
     jetSrc = PFRecoTauPFJetInputs.inputJetCollection,
     minJetPt = PFRecoTauPFJetInputs.minJetPt,
     maxJetAbsEta = PFRecoTauPFJetInputs.maxJetAbsEta,
-    jetRegionSrc = cms.InputTag("recoTauAK4PFJets08Region"),
-    chargedHadronSrc = cms.InputTag('ak4PFJetsRecoTauChargedHadrons'),                                
-    piZeroSrc = cms.InputTag("ak4PFJetsRecoTauPiZeros"),
+    jetRegionSrc = cms.InputTag("recoTauAK5PFJets08Region"),
+    chargedHadronSrc = cms.InputTag('ak5PFJetsRecoTauChargedHadrons'),                                
+    piZeroSrc = cms.InputTag("ak5PFJetsRecoTauPiZeros"),
     buildNullTaus = cms.bool(True),
     # Make maximum size from which to collect isolation cone objects, w.r.t to
     # the axis of the signal cone objects

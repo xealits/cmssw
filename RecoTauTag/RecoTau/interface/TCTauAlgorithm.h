@@ -39,7 +39,6 @@
 
 #include "TrackingTools/TrackAssociator/interface/TrackDetectorAssociator.h"
 
-
 #include "Math/VectorUtil.h"
 
 class TCTauAlgorithm {
@@ -53,13 +52,13 @@ class TCTauAlgorithm {
 
     public:
         TCTauAlgorithm();
-	TCTauAlgorithm(const edm::ParameterSet&, edm::ConsumesCollector&&);
+	TCTauAlgorithm(const edm::ParameterSet&);
         ~TCTauAlgorithm();
 
 	math::XYZTLorentzVector recalculateEnergy(const reco::CaloTau&);
 	math::XYZTLorentzVector recalculateEnergy(const reco::CaloJet&,const reco::TrackRef&,const reco::TrackRefVector&);
 
-	void inputConfig(const edm::ParameterSet& iConfig, edm::ConsumesCollector &iC);
+	void inputConfig(const edm::ParameterSet& iConfig);
 	void eventSetup(const edm::Event&,const edm::EventSetup&);
 
 	double efficiency();
