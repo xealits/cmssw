@@ -2,7 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 from RecoTauTag.RecoTau.PFRecoTauQualityCuts_cfi import PFTauQualityCuts
 from RecoTauTag.RecoTau.TauDiscriminatorTools import requireLeadTrack
-from RecoTauTag.RecoTau.PFRecoTauPFJetInputs_cfi import PFRecoTauPFJetInputs
 
 pfRecoTauDiscriminationByIsolation = cms.EDProducer("PFRecoTauDiscriminationByIsolation",
     PFTauProducer = cms.InputTag('pfRecoTauProducer'), #tau collection to discriminate
@@ -35,9 +34,6 @@ pfRecoTauDiscriminationByIsolation = cms.EDProducer("PFRecoTauDiscriminationByIs
     # This must correspond to the cone size of the algorithm which built the
     # tau. (or if customOuterCone option is used, the custom cone size)
     isoConeSizeForDeltaBeta = cms.double(0.5),
-#    customOuterCone = cms.double(0.5),
-    baselineConeSize = PFRecoTauPFJetInputs.jetConeSize, #important for rescaling of dBeta factor when running over smaller cones
-
     # The delta beta factor maps the expected neutral contribution in the
     # isolation cone from the observed PU charged contribution.  This factor can
     # optionally be a function (use 'x') of the number of vertices in the event

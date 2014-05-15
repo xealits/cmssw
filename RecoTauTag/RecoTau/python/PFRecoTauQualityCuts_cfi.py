@@ -44,7 +44,10 @@ PFTauQualityCuts = cms.PSet(
     pvFindingAlgo = cms.string("closestInDeltaZ"),
     vertexTrackFiltering = cms.bool(False),
     recoverLeadingTrk = cms.bool(False),
+    # produce histograms when running in debug mode
+    # makeHisto = cms.bool(False)
     leadingTrkOrPFCandOption = cms.string("leadPFCand")
     ##leadingTrkOrPFCandOption = cms.string("leadTrack")
+    ##leadingTrkOrPFCandOption = cms.string("minLeadTrackOrPFCand")
     ##leadingTrkOrPFCandOption = cms.string("firstTrack") #default behaviour until 710 (first track in the collection)
 )

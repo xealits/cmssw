@@ -55,8 +55,7 @@ class PFRecoTauChargedHadronFromPFCandidatePlugin : public PFRecoTauChargedHadro
 
   RecoTauQualityCuts* qcuts_;
 
-  typedef std::vector<int> vint;
-  vint inputPdgIds_;  // type of candidates to clusterize
+  std::vector<int> inputPdgIds_;  // type of candidates to clusterize
 
   double dRmergeNeutralHadronWrtChargedHadron_;
   double dRmergeNeutralHadronWrtNeutralHadron_;
@@ -77,15 +76,15 @@ class PFRecoTauChargedHadronFromPFCandidatePlugin : public PFRecoTauChargedHadro
   int verbosity_;
 };
 
-PFRecoTauChargedHadronFromPFCandidatePlugin::PFRecoTauChargedHadronFromPFCandidatePlugin(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC)
-  : PFRecoTauChargedHadronBuilderPlugin(pset, std::move(iC)),
-    vertexAssociator_(pset.getParameter<edm::ParameterSet>("qualityCuts"), std::move(iC)),
+  PFRecoTauChargedHadronFromPFCandidatePlugin::PFRecoTauChargedHadronFromPFCandidatePlugin(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC)
+    : PFRecoTauChargedHadronBuilderPlugin(pset,std::move(iC)),
+      vertexAssociator_(pset.getParameter<edm::ParameterSet>("qualityCuts"),std::move(iC)),
     qcuts_(0)
 {
   edm::ParameterSet qcuts_pset = pset.getParameterSet("qualityCuts").getParameterSet("signalQualityCuts");
   qcuts_ = new RecoTauQualityCuts(qcuts_pset);
 
-  inputPdgIds_ = pset.getParameter<vint>("chargedHadronCandidatesParticleIds");
+  inputPdgIds_ = pset.getParameter<std::vector<int> >("chargedHadronCandidatesParticleIds");
 
   dRmergeNeutralHadronWrtChargedHadron_ = pset.getParameter<double>("dRmergeNeutralHadronWrtChargedHadron");
   dRmergeNeutralHadronWrtNeutralHadron_ = pset.getParameter<double>("dRmergeNeutralHadronWrtNeutralHadron");
@@ -120,19 +119,6 @@ void PFRecoTauChargedHadronFromPFCandidatePlugin::beginEvent()
 
 namespace
 {
-  std::string format_vint(const std::vector<int>& ints)
-  {
-    std::ostringstream os;    
-    os << "{ ";
-    unsigned numEntries = ints.size();
-    for ( unsigned iEntry = 0; iEntry < numEntries; ++iEntry ) {
-      os << ints[iEntry];
-      if ( iEntry < (numEntries - 1) ) os << ", ";
-    }    
-    os << " }";
-    return os.str();
-  }
-  
   std::string getPFCandidateType(reco::PFCandidate::ParticleType pfCandidateType)
   {
     if      ( pfCandidateType == reco::PFCandidate::X         ) return "undefined";
@@ -176,14 +162,12 @@ namespace
     }
   }
 }
-  
+
 PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronFromPFCandidatePlugin::operator()(const reco::PFJet& jet) const 
 {
   if ( verbosity_ ) {
-    std::cout << "<PFRecoTauChargedHadronFromPFCandidatePlugin::operator()>:" << std::endl;
-    std::cout << " pluginName = " << name() << std::endl;
-    std::cout << " jet: Pt = " << jet.pt() << ", eta = " << jet.eta() << ", phi = " << jet.phi() << std::endl;
-    std::cout << " inputPdgIds = " << format_vint(inputPdgIds_) << std::endl;
+    edm::LogPrint("TauChHadronFromPF") << "<PFRecoTauChargedHadronFromPFCandidatePlugin::operator()>:";
+    edm::LogPrint("TauChHadronFromPF") << " pluginName = " << name() ;
   }
 
   ChargedHadronVector output;
@@ -195,8 +179,8 @@ PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronF
   for ( PFCandPtrs::iterator cand = candsVector.begin();
 	cand != candsVector.end(); ++cand ) {
     if ( verbosity_ ) {
-      std::cout << "processing PFCandidate: Pt = " << (*cand)->pt() << ", eta = " << (*cand)->eta() << ", phi = " << (*cand)->phi() 
-		<< " (type = " << getPFCandidateType((*cand)->particleId()) << ", charge = " << (*cand)->charge() << ")" << std::endl;
+      edm::LogPrint("TauChHadronFromPF") << "processing PFCandidate: Pt = " << (*cand)->pt() << ", eta = " << (*cand)->eta() << ", phi = " << (*cand)->phi() 
+		<< " (type = " << getPFCandidateType((*cand)->particleId()) << ", charge = " << (*cand)->charge() << ")" ;
     }
     
     PFRecoTauChargedHadron::PFRecoTauChargedHadronAlgorithm algo = PFRecoTauChargedHadron::kUndefined;
@@ -258,7 +242,7 @@ PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronF
     setChargedHadronP4(*chargedHadron);
 
     if ( verbosity_ ) {
-      chargedHadron->print(std::cout);
+      edm::LogPrint("TauChHadronFromPF") << *chargedHadron;
     }
     // Update the vertex
     if ( chargedHadron->daughterPtr(0).isNonnull() ) chargedHadron->setVertex(chargedHadron->daughterPtr(0)->vertex());
