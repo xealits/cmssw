@@ -25,33 +25,29 @@ selection is constructed by:
 '''
 
 
-# tau input collection
-pfTauInputJets = tauInputJets.clone()
-pfTauInputJets.src = cms.InputTag("ak5PFJets")
 
 
 # PiZeroProducers
 
 pfJetsLegacyHPSPiZeros = ak5PFJetsLegacyHPSPiZeros.clone()
 
-pfJetsLegacyHPSPiZeros.jetSrc = 'pfTauInputJets'
+pfJetsLegacyHPSPiZeros.jetSrc = cms.InputTag("ak5PFJets")
 
 pfTauPFJets08Region = recoTauAK5PFJets08Region.clone()
 pfTauPFJetsRecoTauChargedHadrons = ak5PFJetsRecoTauChargedHadrons.clone()
-pfTauPFJets08Region.src = 'pfTauInputJets'
+pfTauPFJets08Region.src = cms.InputTag("ak5PFJets")
 pfTauPFJets08Region.pfSrc = cms.InputTag("particleFlow")
 pfTauPFJetsRecoTauChargedHadrons.jetRegionSrc = 'pfTauPFJets08Region'
-pfTauPFJetsRecoTauChargedHadrons.jetSrc = 'pfTauInputJets'
+pfTauPFJetsRecoTauChargedHadrons.jetSrc = cms.InputTag("ak5PFJets")
 
 pfTauTagInfoProducer = pfRecoTauTagInfoProducer.clone()
 pfTauTagInfoProducer.PFCandidateProducer = ak5PFJets.src
 pfTauTagInfoProducer.PFJetTracksAssociatorProducer = 'pfJetTracksAssociatorAtVertex'
 
-
 # Clone tau producer
 pfTausProducer = hpsPFTauProducer.clone()
 pfTausCombiner = combinatoricRecoTaus.clone()
-pfTausCombiner.jetSrc= 'pfTauInputJets'
+pfTausCombiner.jetSrc= cms.InputTag("ak5PFJets")
 pfTausCombiner.piZeroSrc= "pfJetsLegacyHPSPiZeros"
 pfTausCombiner.jetRegionSrc='pfTauPFJets08Region'
 pfTausCombiner.chargedHadronSrc='pfTauPFJetsRecoTauChargedHadrons'
@@ -118,7 +114,7 @@ pfTausBaseSequence = cms.Sequence(
 # Associate track to pfJets
 #from RecoJets.JetAssociationProducers.j2tParametersVX_cfi import *
 pfJetTracksAssociatorAtVertex = ak5PFJetTracksAssociatorAtVertex.clone()
-pfJetTracksAssociatorAtVertex.jets= cms.InputTag("pfTauInputJets")
+pfJetTracksAssociatorAtVertex.jets= cms.InputTag("ak5PFJets")
 
 pfTauPileUpVertices = cms.EDFilter(
     "RecoTauPileUpVertexSelector",
@@ -134,7 +130,6 @@ pfTauTagInfoProducer.PFJetTracksAssociatorProducer = 'pfJetTracksAssociatorAtVer
 
 
 pfTausPreSequence = cms.Sequence(
-    pfTauInputJets +
     pfJetTracksAssociatorAtVertex + 
     pfTauPFJets08Region +
     pfTauPileUpVertices +
