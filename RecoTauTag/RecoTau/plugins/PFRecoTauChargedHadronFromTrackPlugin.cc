@@ -49,7 +49,7 @@ class PFRecoTauChargedHadronFromTrackPlugin : public PFRecoTauChargedHadronBuild
   explicit PFRecoTauChargedHadronFromTrackPlugin(const edm::ParameterSet&, edm::ConsumesCollector && iC);
   virtual ~PFRecoTauChargedHadronFromTrackPlugin();
   // Return type is auto_ptr<ChargedHadronVector>
-  return_type operator()(const reco::PFJet&) const;
+  return_type operator()(const reco::Jet&) const;
   // Hook to update PV information
   virtual void beginEvent();
   
@@ -128,7 +128,7 @@ namespace
   }
 }
 
-PFRecoTauChargedHadronFromTrackPlugin::return_type PFRecoTauChargedHadronFromTrackPlugin::operator()(const reco::PFJet& jet) const 
+PFRecoTauChargedHadronFromTrackPlugin::return_type PFRecoTauChargedHadronFromTrackPlugin::operator()(const reco::Jet& jet) const 
 {
   if ( verbosity_ ) {
     edm::LogPrint("TauChHFromTrack") << "<PFRecoTauChargedHadronFromTrackPlugin::operator()>:" ;
