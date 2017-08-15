@@ -127,6 +127,14 @@ class RecoTauCleanerPlugin : public RecoTauEventHolderPlugin
   virtual double operator()(const edm::Ref<std::vector<TauType> >&) const = 0;
   virtual void beginEvent() {}
 };
+
+// Update our reference to the PFCandidates & PVs
+template<class TauType, class PFType>
+void RecoTauBuilderPlugin<TauType, PFType>::beginEvent() {
+  vertexAssociator_.setEvent(*evt());
+  evt()->getByToken(pfCand_token, pfCands_);
+}
+
 } } // end namespace reco::tau
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"

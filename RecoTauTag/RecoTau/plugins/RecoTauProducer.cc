@@ -269,7 +269,7 @@ reco::PFTau RecoGenericTauProducer<reco::PFTau, reco::PFCandidate>::buildNullTau
 
 
 template<>
-reco::PFBaseTau RecoGenericTauProducer<reco::PFBaseTau, reco::Candidate>::buildNullTau(const edm::RefToBase<reco::Jet>& jetRef) {
+reco::PFBaseTau RecoGenericTauProducer<reco::PFBaseTau, pat::PackedCandidate>::buildNullTau(const edm::RefToBase<reco::Jet>& jetRef) {
   reco::PFBaseTau nullTau(std::numeric_limits<int>::quiet_NaN(), jetRef->p4());
   nullTau.setjetRef(jetRef);
   return std::move(nullTau);
@@ -281,7 +281,7 @@ void RecoGenericTauProducer<reco::PFTau, reco::PFCandidate>::setJetRefs(typename
 }
 
 template<>
-void RecoGenericTauProducer<reco::PFBaseTau, reco::Candidate>::setJetRefs(typename reco::tau::RecoTauBuilderPlugin<reco::PFBaseTau, reco::Candidate>::output_type taus, const edm::RefToBase<reco::Jet>& jetRef) {
+void RecoGenericTauProducer<reco::PFBaseTau, pat::PackedCandidate>::setJetRefs(typename reco::tau::RecoTauBuilderPlugin<reco::PFBaseTau, reco::Candidate>::output_type taus, const edm::RefToBase<reco::Jet>& jetRef) {
   std::for_each(taus.begin(), taus.end(), boost::bind(&reco::PFBaseTau::setjetRef, _1, jetRef));
 }
 

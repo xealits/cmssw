@@ -656,15 +656,10 @@ std::auto_ptr<TauType> RecoTauConstructor<TauType, PFCollType, PFType>::get(bool
 
 // Specializations
 template<>
-void RecoTauConstructor<reco::PFTau, reco::PFCandidate, reco::PFCandidate>::setJetRef(const JetBaseRef& jet) {
-  tau_->setjetRef(jet.castTo<reco::PFJetRef>());
-}
+void RecoTauConstructor<reco::PFTau, reco::PFCandidate, reco::PFCandidate>::setJetRef(const JetBaseRef& jet);
 
 template<>
-void RecoTauConstructor<reco::PFBaseTau, reco::Candidate, pat::PackedCandidate>::setJetRef(const JetBaseRef& jet) {
-  tau_->setjetRef(jet);
-
-}
+void RecoTauConstructor<reco::PFBaseTau, pat::PackedCandidate, reco::Candidate>::setJetRef(const JetBaseRef& jet);
 
 
 } } // end reco::tau namespace
