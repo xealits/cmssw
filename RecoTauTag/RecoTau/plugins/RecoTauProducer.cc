@@ -1,8 +1,8 @@
 /*
- * RecoTauProducer
+ * RecoGenericTauProducer
  *
  * Interface between the various tau algorithms and the edm::Event.  The
- * RecoTauProducer takes as data input is a collection (view) of reco::PFJets,
+ * RecoGenericTauProducer takes as data input is a collection (view) of reco::PFJets,
  * and Jet-PiZero assoications that give the reco::RecoTauPiZeros for those
  * jets.  The actual building of taus is done by the list of builders - each of
  * which constructs a PFTau for each PFJet.  The output collection may have
@@ -36,23 +36,26 @@
 #include "DataFormats/TauReco/interface/PFJetChargedHadronAssociation.h"
 #include "DataFormats/TauReco/interface/PFRecoTauChargedHadron.h"
 #include "DataFormats/TauReco/interface/JetPiZeroAssociation.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/JetReco/interface/JetCollection.h"
 #include "DataFormats/Common/interface/Association.h"
 
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 
-class RecoTauProducer : public edm::stream::EDProducer<> 
+template<class TauType, class PFType>
+class RecoGenericTauProducer : public edm::stream::EDProducer<> 
 {
  public:
-  typedef reco::tau::RecoTauBuilderPlugin Builder;
-  typedef reco::tau::RecoTauModifierPlugin Modifier;
+  typedef typename reco::tau::RecoTauBuilderPlugin<TauType, PFType> Builder;
+  typedef typename reco::tau::RecoTauModifierPlugin<TauType> Modifier;
   typedef boost::ptr_vector<Builder> BuilderList;
   typedef boost::ptr_vector<Modifier> ModifierList;
 
-  explicit RecoTauProducer(const edm::ParameterSet& pset);
-  ~RecoTauProducer() {}
+  explicit RecoGenericTauProducer(const edm::ParameterSet& pset);
+  ~RecoGenericTauProducer() {}
   void produce(edm::Event& evt, const edm::EventSetup& es) override;
+
+  TauType buildNullTau(const edm::RefToBase<reco::Jet>& jetRef);
+  void setJetRefs(typename reco::tau::RecoTauBuilderPlugin<TauType, PFType>::output_type taus, const edm::RefToBase<reco::Jet>& jetRef);
 
  private:
   edm::InputTag jetSrc_;
@@ -71,14 +74,15 @@ class RecoTauProducer : public edm::stream::EDProducer<>
   BuilderList builders_;
   ModifierList modifiers_;
   // Optional selection on the output of the taus
-  std::auto_ptr<StringCutObjectSelector<reco::PFTau> > outputSelector_;
+  std::auto_ptr<StringCutObjectSelector<TauType> > outputSelector_;
   // Whether or not to add build a tau from a jet for which the builders
   // return no taus.  The tau will have no content, only the four vector of
   // the orginal jet.
   bool buildNullTaus_;
 };
 
-RecoTauProducer::RecoTauProducer(const edm::ParameterSet& pset) 
+template<class TauType, class PFType>
+RecoGenericTauProducer<TauType, PFType>::RecoGenericTauProducer(const edm::ParameterSet& pset) 
 {
   jetSrc_ = pset.getParameter<edm::InputTag>("jetSrc");
   jetRegionSrc_ = pset.getParameter<edm::InputTag>("jetRegionSrc");
@@ -101,7 +105,7 @@ RecoTauProducer::RecoTauProducer(const edm::ParameterSet& pset)
     // Get plugin name
     const std::string& pluginType = builderPSet->getParameter<std::string>("plugin");
     // Build the plugin
-    builders_.push_back(RecoTauBuilderPluginFactory::get()->create(pluginType, *builderPSet, consumesCollector()));
+    builders_.push_back(edmplugin::PluginFactory<reco::tau::RecoTauBuilderPlugin<TauType, PFType>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)>::get()->create(pluginType, *builderPSet, consumesCollector()));
   }
 
   const VPSet& modfiers = pset.getParameter<VPSet>("modifiers");
@@ -110,8 +114,8 @@ RecoTauProducer::RecoTauProducer(const edm::ParameterSet& pset)
     // Get plugin name
     const std::string& pluginType = modfierPSet->getParameter<std::string>("plugin");
     // Build the plugin
-    reco::tau::RecoTauModifierPlugin* plugin = 0;
-    plugin = RecoTauModifierPluginFactory::get()->create(pluginType, *modfierPSet, consumesCollector());
+    reco::tau::RecoTauModifierPlugin<TauType>* plugin = 0;
+    plugin = edmplugin::PluginFactory<reco::tau::RecoTauModifierPlugin<TauType>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)>::get()->create(pluginType, *modfierPSet, consumesCollector());
     modifiers_.push_back(plugin);
   }
 
@@ -119,15 +123,16 @@ RecoTauProducer::RecoTauProducer(const edm::ParameterSet& pset)
   if ( pset.exists("outputSelection") ) {
     std::string selection = pset.getParameter<std::string>("outputSelection");
     if ( selection != "" ) {
-      outputSelector_.reset(new StringCutObjectSelector<reco::PFTau>(selection));
+      outputSelector_.reset(new StringCutObjectSelector<TauType>(selection));
     }
   }
   buildNullTaus_ = pset.getParameter<bool>("buildNullTaus");
 
-  produces<reco::PFTauCollection>();
+  produces<std::vector<TauType> >();
 }
 
-void RecoTauProducer::produce(edm::Event& evt, const edm::EventSetup& es) 
+template<class TauType, class PFType>
+void RecoGenericTauProducer<TauType, PFType>::produce(edm::Event& evt, const edm::EventSetup& es) 
 {
   // Get the jet input collection via a view of Candidates
   edm::Handle<reco::JetView> jetView;
@@ -151,17 +156,17 @@ void RecoTauProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   evt.getByToken(piZero_token, piZeroAssoc);
 
   // Update all our builders and modifiers with the event info
-  for (BuilderList::iterator builder = builders_.begin();
+  for (typename BuilderList::iterator builder = builders_.begin();
       builder != builders_.end(); ++builder) {
     builder->setup(evt, es);
   }
-  for (ModifierList::iterator modifier = modifiers_.begin();
+  for (typename ModifierList::iterator modifier = modifiers_.begin();
       modifier != modifiers_.end(); ++modifier) {
     modifier->setup(evt, es);
   }
 
   // Create output collection
-  auto output = std::make_unique<reco::PFTauCollection>();
+  auto output = std::make_unique<std::vector<TauType> >();
   output->reserve(jetView->size());
   
   // Loop over the jets and build the taus for each jet
@@ -204,21 +209,21 @@ void RecoTauProducer::produce(edm::Event& evt, const edm::EventSetup& es)
     const std::vector<reco::RecoTauPiZero>& piZeros = (*piZeroAssoc)[jetRef];
     // Loop over our builders and create the set of taus for this jet
     unsigned int nTausBuilt = 0;
-    for ( BuilderList::const_iterator builder = builders_.begin();
+    for (typename BuilderList::const_iterator builder = builders_.begin();
 	  builder != builders_.end(); ++builder) {
       // Get a ptr_vector of taus from the builder
-      reco::tau::RecoTauBuilderPlugin::output_type taus((*builder)(jetRef, chargedHadrons, piZeros, uniqueRegionalCands));
+      typename reco::tau::RecoTauBuilderPlugin<TauType, PFType>::output_type taus((*builder)(jetRef, chargedHadrons, piZeros, uniqueRegionalCands));
       // JAN - convert reco::Jet ref to PFJet ref (only in direct interaction with PFTau)
 
       // Make sure all taus have their jetref set correctly
-      std::for_each(taus.begin(), taus.end(), boost::bind(&reco::PFTau::setjetRef, _1, jetRef.castTo<reco::PFJetRef>()));
+      setJetRefs(taus, jetRef);
       // Copy without selection
       if ( !outputSelector_.get() ) {
         output->insert(output->end(), taus.begin(), taus.end());
         nTausBuilt += taus.size();
       } else {
         // Copy only those that pass the selection.
-        BOOST_FOREACH( const reco::PFTau& tau, taus ) {
+        BOOST_FOREACH( const TauType& tau, taus ) {
           if ( (*outputSelector_)(tau) ) {
             nTausBuilt++;
             output->push_back(tau);
@@ -230,28 +235,62 @@ void RecoTauProducer::produce(edm::Event& evt, const edm::EventSetup& es)
     // The null PFTau has no content, but it's four vector is set to that of the
     // jet.
     if ( !nTausBuilt && buildNullTaus_ ) {
-      reco::PFTau nullTau(std::numeric_limits<int>::quiet_NaN(), jetRef->p4());
-      nullTau.setjetRef(jetRef.castTo<reco::PFJetRef>());
+      TauType nullTau(buildNullTau(jetRef));
       output->push_back(nullTau);
     }
   }
 
   // Loop over the taus we have created and apply our modifiers to the taus
-  for ( reco::PFTauCollection::iterator tau = output->begin();
+  for (typename std::vector<TauType>::iterator tau = output->begin();
 	tau != output->end(); ++tau ) {
-    for ( ModifierList::const_iterator modifier = modifiers_.begin();
-	  modifier != modifiers_.end(); ++modifier ) {
+    for (typename ModifierList::const_iterator modifier = modifiers_.begin();
+	  modifier != modifiers_.end(); ++modifier) {
       (*modifier)(*tau);
     }
   }
   
-  for ( ModifierList::iterator modifier = modifiers_.begin();
-        modifier != modifiers_.end(); ++modifier ) {
+  for (typename ModifierList::iterator modifier = modifiers_.begin();
+        modifier != modifiers_.end(); ++modifier) {
     modifier->endEvent();
   }
   
   evt.put(std::move(output));
 }
+
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFBaseTau.h"
+
+template<>
+reco::PFTau RecoGenericTauProducer<reco::PFTau, reco::PFCandidate>::buildNullTau(const edm::RefToBase<reco::Jet>& jetRef) {
+  reco::PFTau nullTau(std::numeric_limits<int>::quiet_NaN(), jetRef->p4());
+  nullTau.setjetRef(jetRef.castTo<reco::PFJetRef>());
+  return std::move(nullTau);
+}
+
+
+template<>
+reco::PFBaseTau RecoGenericTauProducer<reco::PFBaseTau, reco::Candidate>::buildNullTau(const edm::RefToBase<reco::Jet>& jetRef) {
+  reco::PFBaseTau nullTau(std::numeric_limits<int>::quiet_NaN(), jetRef->p4());
+  nullTau.setjetRef(jetRef);
+  return std::move(nullTau);
+}
+
+template<>
+void RecoGenericTauProducer<reco::PFTau, reco::PFCandidate>::setJetRefs(typename reco::tau::RecoTauBuilderPlugin<reco::PFTau, reco::PFCandidate>::output_type taus, const edm::RefToBase<reco::Jet>& jetRef) {
+  std::for_each(taus.begin(), taus.end(), boost::bind(&reco::PFTau::setjetRef, _1, jetRef.castTo<reco::PFJetRef>()));
+}
+
+template<>
+void RecoGenericTauProducer<reco::PFBaseTau, reco::Candidate>::setJetRefs(typename reco::tau::RecoTauBuilderPlugin<reco::PFBaseTau, reco::Candidate>::output_type taus, const edm::RefToBase<reco::Jet>& jetRef) {
+  std::for_each(taus.begin(), taus.end(), boost::bind(&reco::PFBaseTau::setjetRef, _1, jetRef));
+}
+
+template class RecoGenericTauProducer<reco::PFTau, reco::PFCandidate>; 
+template class RecoGenericTauProducer<reco::PFBaseTau, pat::PackedCandidate>; 
+
+typedef RecoGenericTauProducer<reco::PFTau, reco::PFCandidate> RecoTauProducer;
+typedef RecoGenericTauProducer<reco::PFBaseTau, pat::PackedCandidate> RecoPFBaseTauProducer;
+
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(RecoTauProducer);

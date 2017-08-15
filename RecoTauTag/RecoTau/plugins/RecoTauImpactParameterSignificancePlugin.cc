@@ -26,7 +26,7 @@
 
 namespace reco { namespace tau {
 
-class RecoTauImpactParameterSignificancePlugin : public RecoTauModifierPlugin {
+class RecoTauImpactParameterSignificancePlugin : public RecoTauModifierPlugin<reco::PFTau> {
   public:
     explicit RecoTauImpactParameterSignificancePlugin(
 						      const edm::ParameterSet& pset,edm::ConsumesCollector &&iC);

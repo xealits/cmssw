@@ -199,7 +199,7 @@ PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronF
     else algo = PFRecoTauChargedHadron::kPFNeutralHadron;
     std::auto_ptr<PFRecoTauChargedHadron> chargedHadron(new PFRecoTauChargedHadron(**cand, algo));
     
-    // JAN - work on this. This must be adapted carefully to MiniAOD packed candidates
+    // JAN - FIXME work on this. This must be adapted carefully to MiniAOD packed candidates
     const reco::PFCandidate* pfCand = dynamic_cast<const reco::PFCandidate*>(&**cand);
     if (pfCand) {
       if ( pfCand->trackRef().isNonnull() ) chargedHadron->track_ = edm::refToPtr(pfCand->trackRef());

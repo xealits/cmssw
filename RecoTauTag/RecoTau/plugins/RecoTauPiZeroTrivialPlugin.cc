@@ -13,7 +13,7 @@
 #include "RecoTauTag/RecoTau/interface/RecoTauPiZeroPlugins.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/TauReco/interface/RecoTauPiZero.h"
 
 #include "RecoTauTag/RecoTau/interface/RecoTauCommonUtilities.h"
@@ -27,7 +27,7 @@ class RecoTauPiZeroTrivialPlugin : public RecoTauPiZeroBuilderPlugin {
   public:
   explicit RecoTauPiZeroTrivialPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC);
     ~RecoTauPiZeroTrivialPlugin() {}
-    return_type operator()(const reco::PFJet& jet) const override;
+    return_type operator()(const reco::Jet& jet) const override;
   private:
     RecoTauQualityCuts qcuts_;
 };
@@ -38,7 +38,7 @@ RecoTauPiZeroTrivialPlugin::RecoTauPiZeroTrivialPlugin(
           "qualityCuts").getParameterSet("signalQualityCuts")) {}
 
 RecoTauPiZeroBuilderPlugin::return_type RecoTauPiZeroTrivialPlugin::operator()(
-    const reco::PFJet& jet) const {
+    const reco::Jet& jet) const {
   std::vector<CandidatePtr> pfGammaCands = qcuts_.filterCandRefs(pfGammas(jet));
   PiZeroVector output;
   output.reserve(pfGammaCands.size());

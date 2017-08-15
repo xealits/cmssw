@@ -26,10 +26,14 @@
 
 #include "DataFormats/Common/interface/AssociationMap.h"
 #include "DataFormats/JetReco/interface/JetCollection.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
 
 #include "DataFormats/Provenance/interface/RunLumiEventNumber.h"
+
+#include "RecoTauTag/RecoTau/interface/RecoTauCommonUtilities.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include <map>
 
@@ -40,8 +44,9 @@ namespace edm {
 }
 
 namespace reco {
-  class PFTau;
   class Jet;
+  class PFTau;
+  class PFBaseTau;
 }
 
 namespace reco { namespace tau {
@@ -63,7 +68,8 @@ class RecoTauVertexAssociator {
     /// Convenience function to get the PV associated to the jet that
     /// seeded this tau (useJet=true, old behaviour) 
     /// or leaging charged hadron if set (useJet=false).
-    reco::VertexRef associatedVertex(const PFTau& tau, bool useJet=false) const;
+    reco::VertexRef associatedVertex(const reco::PFTau& tau, bool useJet=false) const;
+    reco::VertexRef associatedVertex(const reco::PFBaseTau& tau, bool useJet=false) const;
     reco::VertexRef associatedVertex(const TrackBaseRef& track) const;
 
     /// Load the vertices from the event.

@@ -38,7 +38,6 @@
 
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/JetReco/interface/JetCollection.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFRecoTauChargedHadron.h"
 #include "DataFormats/TauReco/interface/RecoTauPiZero.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauPluginsCommon.h"
@@ -52,11 +51,13 @@
 namespace reco { namespace tau {
 
 /* Class that constructs PFTau(s) from a Jet and its associated PiZeros */
+template<class TauType, class PFType>
 class RecoTauBuilderPlugin : public RecoTauEventHolderPlugin 
 {
  public:
-  typedef boost::ptr_vector<reco::PFTau> output_type;
+  typedef boost::ptr_vector<TauType> output_type;
   typedef std::auto_ptr<output_type> return_type;
+  typedef std::vector<PFType> PFCandidateCollection;
 
   explicit RecoTauBuilderPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector && iC)
     : RecoTauEventHolderPlugin(pset),
@@ -84,7 +85,7 @@ class RecoTauBuilderPlugin : public RecoTauEventHolderPlugin
   /// Get primary vertex associated to this jet
   reco::VertexRef primaryVertex(const reco::JetBaseRef& jet) const { return vertexAssociator_.associatedVertex(*jet); }
   /// Get primary vertex associated to this tau
-  reco::VertexRef primaryVertex(const reco::PFTau& tau, bool useJet=false) const { return vertexAssociator_.associatedVertex(tau, useJet); }
+  reco::VertexRef primaryVertex(const TauType& tau, bool useJet=false) const { return vertexAssociator_.associatedVertex(tau, useJet); }
 
   // Hook called by base class at the beginning of each event. Used to update
   // handle to PFCandidates
@@ -99,6 +100,7 @@ class RecoTauBuilderPlugin : public RecoTauEventHolderPlugin
 };
 
 /* Class that updates a PFTau's members (i.e. electron variables) */
+template<class TauType>
 class RecoTauModifierPlugin : public RecoTauEventHolderPlugin 
 {
  public:
@@ -107,12 +109,13 @@ class RecoTauModifierPlugin : public RecoTauEventHolderPlugin
   {}
   virtual ~RecoTauModifierPlugin() {}
   // Modify an existing PFTau (i.e. add electron rejection, etc)
-  virtual void operator()(PFTau&) const = 0;
+  virtual void operator()(TauType&) const = 0;
   virtual void beginEvent() {}
   virtual void endEvent() {}
 };
 
 /* Class that returns a double value indicating the quality of a given tau */
+template<class TauType>
 class RecoTauCleanerPlugin : public RecoTauEventHolderPlugin 
 {
  public:
@@ -121,15 +124,23 @@ class RecoTauCleanerPlugin : public RecoTauEventHolderPlugin
   {}
   virtual ~RecoTauCleanerPlugin() {}
   // Modify an existing PFTau (i.e. add electron rejection, etc)
-  virtual double operator()(const PFTauRef&) const = 0;
+  virtual double operator()(const edm::Ref<std::vector<TauType> >&) const = 0;
   virtual void beginEvent() {}
 };
 } } // end namespace reco::tau
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
 
-typedef edmplugin::PluginFactory<reco::tau::RecoTauBuilderPlugin*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoTauBuilderPluginFactory;
-typedef edmplugin::PluginFactory<reco::tau::RecoTauModifierPlugin*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoTauModifierPluginFactory;
-typedef edmplugin::PluginFactory<reco::tau::RecoTauCleanerPlugin*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoTauCleanerPluginFactory;
+#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFBaseTau.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
+typedef edmplugin::PluginFactory<reco::tau::RecoTauBuilderPlugin<reco::PFTau, reco::PFCandidate>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoTauBuilderPluginFactory;
+typedef edmplugin::PluginFactory<reco::tau::RecoTauModifierPlugin<reco::PFTau>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoTauModifierPluginFactory;
+typedef edmplugin::PluginFactory<reco::tau::RecoTauCleanerPlugin<reco::PFTau>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoTauCleanerPluginFactory;
+
+typedef edmplugin::PluginFactory<reco::tau::RecoTauBuilderPlugin<reco::PFBaseTau, pat::PackedCandidate>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoBaseTauBuilderPluginFactory;
+typedef edmplugin::PluginFactory<reco::tau::RecoTauModifierPlugin<reco::PFBaseTau>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoBaseTauModifierPluginFactory;
+typedef edmplugin::PluginFactory<reco::tau::RecoTauCleanerPlugin<reco::PFBaseTau>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)> RecoBaseTauCleanerPluginFactory;
 
 #endif

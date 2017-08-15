@@ -17,7 +17,7 @@
 namespace reco { namespace tau {
 
 // Filter photons
-class RecoTauPhotonFilter : public RecoTauModifierPlugin {
+class RecoTauPhotonFilter : public RecoTauModifierPlugin<reco::PFTau> {
   public:
   explicit RecoTauPhotonFilter(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC);
     virtual ~RecoTauPhotonFilter() {}

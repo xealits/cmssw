@@ -15,7 +15,7 @@
 #include "DataFormats/TauReco/interface/RecoTauPiZero.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 
 #include "RecoTauTag/RecoTau/interface/RecoTauCommonUtilities.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauQualityCuts.h"
@@ -30,7 +30,7 @@ class RecoTauPiZeroCombinatoricPlugin : public RecoTauPiZeroBuilderPlugin {
   explicit RecoTauPiZeroCombinatoricPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC);
     ~RecoTauPiZeroCombinatoricPlugin() {}
     // Return type is auto_ptr<PiZeroVector>
-    return_type operator()(const reco::PFJet& jet) const override;
+    return_type operator()(const reco::Jet& jet) const override;
 
   private:
     RecoTauQualityCuts qcuts_;
@@ -53,7 +53,7 @@ RecoTauPiZeroCombinatoricPlugin::RecoTauPiZeroCombinatoricPlugin(
 
 RecoTauPiZeroCombinatoricPlugin::return_type
 RecoTauPiZeroCombinatoricPlugin::operator()(
-    const reco::PFJet& jet) const {
+    const reco::Jet& jet) const {
   // Get list of gamma candidates
   typedef std::vector<reco::CandidatePtr> CandPtrs;
   typedef CandPtrs::const_iterator CandIter;

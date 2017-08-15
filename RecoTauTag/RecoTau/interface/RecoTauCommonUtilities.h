@@ -15,9 +15,10 @@
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
-#include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/RecoTauPiZero.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 // Boost helpers
@@ -153,13 +154,13 @@ template<typename InputIterator> reco::Candidate::LorentzVector sumPFCandP4(
 /// Sum the pT of a collection of PFCandidates
 template<typename InputIterator> double sumPFCandPt(InputIterator begin,
     InputIterator end) {
-    return sumPFVector(begin, end, &PFCandidate::pt, 0.0);
+    return sumPFVector(begin, end, &Candidate::pt, 0.0);
   }
 
 /// Sum the charge of a collection of PFCandidates
 template<typename InputIterator> int sumPFCandCharge(InputIterator begin,
     InputIterator end) {
-    return sumPFVector(begin, end, &PFCandidate::charge, 0);
+    return sumPFVector(begin, end, &Candidate::charge, 0);
   }
 
 template<typename InputIterator> InputIterator leadPFCand(InputIterator begin,

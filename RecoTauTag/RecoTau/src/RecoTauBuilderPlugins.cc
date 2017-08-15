@@ -20,3 +20,9 @@ EDM_REGISTER_PLUGINFACTORY(RecoTauModifierPluginFactory,
                            "RecoTauModifierPluginFactory");
 EDM_REGISTER_PLUGINFACTORY(RecoTauCleanerPluginFactory,
                            "RecoTauCleanerPluginFactory");
+EDM_REGISTER_PLUGINFACTORY(RecoBaseTauBuilderPluginFactory,
+                           "RecoBaseTauBuilderPluginFactory");
+EDM_REGISTER_PLUGINFACTORY(RecoBaseTauModifierPluginFactory,
+                           "RecoBaseTauModifierPluginFactory");
+EDM_REGISTER_PLUGINFACTORY(RecoBaseTauCleanerPluginFactory,
+                           "RecoBaseTauCleanerPluginFactory");

@@ -137,9 +137,14 @@ void RecoTauPiZeroProducer::produce(edm::Event& evt, const edm::EventSetup& es)
     builder.setup(evt, es);
   }
 
-  // Convert the view to a RefVector of actual PFJets
-  reco::PFJetRefVector jetRefs =
-      reco::tau::castView<reco::PFJetRefVector>(jetView);
+  // convert the view to a RefVector of actual PFJets
+  // reco::PFJetRefVector pfJets = reco::tau::castView<reco::PFJetRefVector>(jets);
+  edm::RefToBaseVector<reco::Jet> jetRefs;
+   // = reco::tau::castView<edm::RefToBaseVector<reco::Jet>>(jets);
+  size_t nElements = jetView->size();
+  for (size_t i = 0; i < nElements; ++i) {
+    jetRefs.push_back(jetView->refAt(i));
+  }
   // Make our association
   std::unique_ptr<reco::JetPiZeroAssociation> association;
 
@@ -152,7 +157,8 @@ void RecoTauPiZeroProducer::produce(edm::Event& evt, const edm::EventSetup& es)
   }
 
   // Loop over our jets
-  BOOST_FOREACH(const reco::PFJetRef& jet, jetRefs) {
+  for (size_t i_j = 0; i_j < jetRefs.size(); ++i_j) {
+    const auto& jet = jetRefs.at(i_j);
 
     if(jet->pt() - minJetPt_ < 1e-5) continue;
     if(std::abs(jet->eta()) - maxJetAbsEta_ > -1e-5) continue;

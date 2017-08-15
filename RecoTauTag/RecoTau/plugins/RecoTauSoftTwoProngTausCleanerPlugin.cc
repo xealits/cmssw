@@ -1,5 +1,5 @@
 /*
- * RecoTauSoftTwoProngTausCleanerPlugin
+ * RecoTauGenericSoftTwoProngTausCleanerPlugin
  *
  * Author: Christian Veelken, NICPB Tallinn
  *
@@ -8,27 +8,31 @@
 
 #include "RecoTauTag/RecoTau/interface/RecoTauBuilderPlugins.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+#include "DataFormats/TauReco/interface/PFBaseTau.h"
 
 namespace reco { namespace tau {
 
-class RecoTauSoftTwoProngTausCleanerPlugin : public RecoTauCleanerPlugin 
+template<class TauType>
+class RecoTauGenericSoftTwoProngTausCleanerPlugin : public RecoTauCleanerPlugin<TauType>
 {
  public:
-  RecoTauSoftTwoProngTausCleanerPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector&& iC);
+  RecoTauGenericSoftTwoProngTausCleanerPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector&& iC);
 
   // Get ranking value for a given tau Ref
-  double operator()(const reco::PFTauRef&) const override;
+  double operator()(const edm::Ref<std::vector<TauType> >&) const override;
  private:
   double minTrackPt_;
 };
 
-RecoTauSoftTwoProngTausCleanerPlugin::RecoTauSoftTwoProngTausCleanerPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector&& iC)
-  : RecoTauCleanerPlugin(pset,std::move(iC)) 
+template<class TauType>
+RecoTauGenericSoftTwoProngTausCleanerPlugin<TauType>::RecoTauGenericSoftTwoProngTausCleanerPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector&& iC)
+  : RecoTauCleanerPlugin<TauType>(pset,std::move(iC)) 
 {
   minTrackPt_ = pset.getParameter<double>("minTrackPt");
 }
 
-double RecoTauSoftTwoProngTausCleanerPlugin::operator()(const reco::PFTauRef& tau) const 
+template<class TauType>
+double RecoTauGenericSoftTwoProngTausCleanerPlugin<TauType>::operator()(const edm::Ref<std::vector<TauType> >& tau) const 
 {
   double result = 0.;
   const std::vector<PFRecoTauChargedHadron>& chargedHadrons = tau->signalTauChargedHadronCandidates();
@@ -41,6 +45,12 @@ double RecoTauSoftTwoProngTausCleanerPlugin::operator()(const reco::PFTauRef& ta
   return result;
 }
 
+template class RecoTauGenericSoftTwoProngTausCleanerPlugin<reco::PFTau>;
+typedef RecoTauGenericSoftTwoProngTausCleanerPlugin<reco::PFTau> RecoTauSoftTwoProngTausCleanerPlugin;
+template class RecoTauGenericSoftTwoProngTausCleanerPlugin<reco::PFBaseTau>;
+typedef RecoTauGenericSoftTwoProngTausCleanerPlugin<reco::PFBaseTau> RecoBaseTauSoftTwoProngTausCleanerPlugin;
+
+
 }} // end namespace reco::tau
 
 // Register our plugin
@@ -48,3 +58,7 @@ double RecoTauSoftTwoProngTausCleanerPlugin::operator()(const reco::PFTauRef& ta
 DEFINE_EDM_PLUGIN(RecoTauCleanerPluginFactory, 
     reco::tau::RecoTauSoftTwoProngTausCleanerPlugin, 
     "RecoTauSoftTwoProngTausCleanerPlugin");
+
+DEFINE_EDM_PLUGIN(RecoBaseTauCleanerPluginFactory, 
+    reco::tau::RecoBaseTauSoftTwoProngTausCleanerPlugin, 
+    "RecoBaseTauSoftTwoProngTausCleanerPlugin");
