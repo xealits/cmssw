@@ -55,6 +55,8 @@ class PFTau : public BaseTau {
       kRareDecayMode
     };
 
+    typedef PFJetCollection TauJetCollection;
+
     PFTau();
     PFTau(Charge q,const LorentzVector &,const Point & = Point( 0, 0, 0 ) );
     virtual ~PFTau() {};
