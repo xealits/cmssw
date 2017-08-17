@@ -54,6 +54,20 @@
   <class name="reco::PFTauDiscriminatorRefVector"/>
   <class name="edm::Wrapper<reco::PFTauDiscriminator>"/>
 
+  <class name="reco::PFBaseTauDiscriminatorBase">
+    <field name="transientVector_" transient="true"/>
+  </class>
+
+  <class name="reco::PFBaseTauDiscriminator">
+  </class>
+  <class name="reco::PFBaseTauDiscriminatorRef"/>
+  <class name="reco::PFBaseTauDiscriminatorRefProd"/>
+  <class name="reco::PFBaseTauDiscriminatorRefVector"/>
+  <class name="edm::Wrapper<reco::PFBaseTauDiscriminator>"/>
+
+  <class name="std::pair<reco::PFBaseTauRef, float>"/>
+  <class name="std::vector<std::pair<reco::PFBaseTauRef, float> >" />
+
   <class name="reco::JetPiZeroAssociationBase">
     <field name="transientVector_" transient="true"/>
   </class>

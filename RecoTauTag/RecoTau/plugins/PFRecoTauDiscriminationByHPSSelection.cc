@@ -18,22 +18,23 @@ namespace {
   }
 }
 
-class PFRecoTauDiscriminationByHPSSelection : public PFTauDiscriminationProducerBase 
+template<class TauType>
+class TauDiscriminationByHPSSelection : public TauDiscriminationProducerBase<TauType, typename TauType::TauDiscriminator> 
 {
  public:
-  explicit PFRecoTauDiscriminationByHPSSelection(const edm::ParameterSet&);
-  ~PFRecoTauDiscriminationByHPSSelection();
-  double discriminate(const reco::PFTauRef&) const override;
+  explicit TauDiscriminationByHPSSelection(const edm::ParameterSet&);
+  ~TauDiscriminationByHPSSelection();
+  double discriminate(const edm::Ref<std::vector<TauType> >&) const override;
 
  private:
-  typedef StringObjectFunction<reco::PFTau> TauFunc;
+  typedef StringObjectFunction<TauType> TauFunc;
 
   struct DecayModeCuts 
   {
     DecayModeCuts()
       : maxMass_(0)
     {}
-    ~DecayModeCuts() {} // CV: maxMass object gets deleted by PFRecoTauDiscriminationByHPSSelection destructor
+    ~DecayModeCuts() {} // CV: maxMass object gets deleted by TauDiscriminationByHPSSelection destructor
     unsigned nTracksMin_;
     unsigned nChargedPFCandsMin_;
     double minMass_;
@@ -61,8 +62,23 @@ class PFRecoTauDiscriminationByHPSSelection : public PFTauDiscriminationProducer
   int verbosity_;
 };
 
-PFRecoTauDiscriminationByHPSSelection::PFRecoTauDiscriminationByHPSSelection(const edm::ParameterSet& pset)
-  : PFTauDiscriminationProducerBase(pset)
+namespace {
+  inline const reco::TrackBaseRef getTrack(const reco::Candidate& cand)
+  {
+    const reco::PFCandidate* pfCandPtr = dynamic_cast<const reco::PFCandidate*>(&cand);
+    if (pfCandPtr) {
+      if      ( pfCandPtr->trackRef().isNonnull()    ) return reco::TrackBaseRef(pfCandPtr->trackRef());
+      else if ( pfCandPtr->gsfTrackRef().isNonnull() ) return reco::TrackBaseRef(pfCandPtr->gsfTrackRef());
+      else return reco::TrackBaseRef();
+    }
+    // JAN - FIXME: Add method for miniAOD PackedCandidate
+    return reco::TrackBaseRef();
+  }
+}
+
+template<class TauType>
+TauDiscriminationByHPSSelection<TauType>::TauDiscriminationByHPSSelection(const edm::ParameterSet& pset)
+  : TauDiscriminationProducerBase<TauType, typename TauType::TauDiscriminator>(pset)
 {
   // Get the matchign cut
   matchingCone_ = pset.getParameter<double>("matchingCone");
@@ -117,19 +133,21 @@ PFRecoTauDiscriminationByHPSSelection::PFRecoTauDiscriminationByHPSSelection(con
 
 }
 
-PFRecoTauDiscriminationByHPSSelection::~PFRecoTauDiscriminationByHPSSelection()
+template<class TauType>
+TauDiscriminationByHPSSelection<TauType>::~TauDiscriminationByHPSSelection()
 {
-  for ( DecayModeCutMap::iterator it = decayModeCuts_.begin();
+  for ( typename DecayModeCutMap::iterator it = decayModeCuts_.begin();
 	it != decayModeCuts_.end(); ++it ) {
     delete it->second.maxMass_;
   }
 }
 
+template<class TauType>
 double
-PFRecoTauDiscriminationByHPSSelection::discriminate(const reco::PFTauRef& tau) const
+TauDiscriminationByHPSSelection<TauType>::discriminate(const edm::Ref<std::vector<TauType> >& tau) const
 {
   if ( verbosity_ ) {
-    edm::LogPrint("PFTauByHPSSelect") << "<PFRecoTauDiscriminationByHPSSelection::discriminate>:" ;
+    edm::LogPrint("PFTauByHPSSelect") << "<TauDiscriminationByHPSSelection::discriminate>:" ;
     edm::LogPrint("PFTauByHPSSelect") << " nCharged = " << tau->signalTauChargedHadronCandidates().size() ;
     edm::LogPrint("PFTauByHPSSelect") << " nPiZeros = " << tau->signalPiZeroCandidates().size() ;
   }
@@ -143,7 +161,7 @@ PFRecoTauDiscriminationByHPSSelection::discriminate(const reco::PFTauRef& tau) c
   }
 
   // See if we select this decay mode
-  DecayModeCutMap::const_iterator massWindowIter =
+  typename DecayModeCutMap::const_iterator massWindowIter =
       decayModeCuts_.find(std::make_pair(tau->signalTauChargedHadronCandidates().size(),
                                          tau->signalPiZeroCandidates().size()));
   // Check if decay mode is supported
@@ -317,13 +335,10 @@ PFRecoTauDiscriminationByHPSSelection::discriminate(const reco::PFTauRef& tau) c
 
   if ( minPixelHits_ > 0 ) {
     int numPixelHits = 0;
-    const std::vector<reco::PFCandidatePtr>& chargedHadrCands = tau->signalPFChargedHadrCands();
-    for ( std::vector<reco::PFCandidatePtr>::const_iterator chargedHadrCand = chargedHadrCands.begin();
-	  chargedHadrCand != chargedHadrCands.end(); ++chargedHadrCand ) {
-      const reco::Track* track = 0;
-      if ( (*chargedHadrCand)->trackRef().isNonnull() ) track = (*chargedHadrCand)->trackRef().get();
-      else if ( (*chargedHadrCand)->gsfTrackRef().isNonnull() ) track = (*chargedHadrCand)->gsfTrackRef().get();
-      if ( track ) {
+    const auto& chargedHadrCands = tau->signalPFChargedHadrCands();
+    for (const auto& chargedHadrCand : chargedHadrCands) {
+      const auto& track = getTrack(*chargedHadrCand);
+      if ( track.isNonnull() ) {
 	numPixelHits += track->hitPattern().numberOfValidPixelHits();
       }
     }
@@ -342,4 +357,11 @@ PFRecoTauDiscriminationByHPSSelection::discriminate(const reco::PFTauRef& tau) c
   return 1.0;
 }
 
+template class TauDiscriminationByHPSSelection<reco::PFTau>;
+typedef TauDiscriminationByHPSSelection<reco::PFTau> PFRecoTauDiscriminationByHPSSelection;
+
+template class TauDiscriminationByHPSSelection<reco::PFBaseTau>;
+typedef TauDiscriminationByHPSSelection<reco::PFBaseTau> PFRecoBaseTauDiscriminationByHPSSelection;
+
 DEFINE_FWK_MODULE(PFRecoTauDiscriminationByHPSSelection);
+DEFINE_FWK_MODULE(PFRecoBaseTauDiscriminationByHPSSelection);

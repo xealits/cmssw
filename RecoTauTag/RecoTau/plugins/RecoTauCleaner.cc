@@ -67,8 +67,8 @@ class RecoTauCleanerImpl : public edm::stream::EDProducer<>
   edm::InputTag tauSrc_;
   CleanerList cleaners_;
   // Optional selection on the output of the taus
-  std::unique_ptr<const StringCutObjectSelector<reco::PFTau> > outputSelector_;
-  edm::EDGetTokenT<reco::PFTauCollection> tau_token;
+  std::unique_ptr<const StringCutObjectSelector<TauType> > outputSelector_;
+  edm::EDGetTokenT<std::vector<TauType> > tau_token;
   int verbosity_;
 };
 
@@ -76,7 +76,7 @@ template<typename Prod, typename TauType>
 RecoTauCleanerImpl<Prod, TauType>::RecoTauCleanerImpl(const edm::ParameterSet& pset) 
 {
   tauSrc_ = pset.getParameter<edm::InputTag>("src");
-  tau_token=consumes<reco::PFTauCollection>(tauSrc_);
+  tau_token=consumes<std::vector<TauType> >(tauSrc_);
   // Build our list of quality plugins
   typedef std::vector<edm::ParameterSet> VPSet;
   // Get each of our tau builders
@@ -87,7 +87,7 @@ RecoTauCleanerImpl<Prod, TauType>::RecoTauCleanerImpl(const edm::ParameterSet& p
     // Get plugin name
     const std::string& pluginType = cleanerPSet->getParameter<std::string>("plugin");
     // Build the plugin
-    cleanerEntry->plugin_.reset(RecoTauCleanerPluginFactory::get()->create(pluginType, *cleanerPSet, consumesCollector()));
+    cleanerEntry->plugin_.reset(edmplugin::PluginFactory<reco::tau::RecoTauCleanerPlugin<TauType>*(const edm::ParameterSet&, edm::ConsumesCollector &&iC)>::get()->create(pluginType, *cleanerPSet, consumesCollector()));
     cleanerEntry->tolerance_ = ( cleanerPSet->exists("tolerance") ) ?
     cleanerPSet->getParameter<double>("tolerance") : 0.;
     cleaners_.emplace_back(cleanerEntry);
@@ -97,7 +97,7 @@ RecoTauCleanerImpl<Prod, TauType>::RecoTauCleanerImpl(const edm::ParameterSet& p
   if ( pset.exists("outputSelection") ) {
     std::string selection = pset.getParameter<std::string>("outputSelection");
     if ( selection != "" ) {
-      outputSelector_.reset(new StringCutObjectSelector<reco::PFTau>(selection));
+      outputSelector_.reset(new StringCutObjectSelector<TauType>(selection));
     }
   }
 
@@ -187,12 +187,11 @@ namespace
 	const reco::RecoTauPiZero& piZero = signalPiZeroCandidates.at(iPiZero);
 	std::cout << " piZero #" << iPiZero << ": Pt = " << piZero.pt() << ", eta = " << piZero.eta() << ", phi = " << piZero.phi() << ", mass = " << piZero.mass() << std::endl;
       }
-      const std::vector<reco::PFCandidatePtr>& isolationPFCands = tauRef_->isolationPFCands();
+      const auto& isolationPFCands = tauRef_->isolationPFCands();
       size_t numPFCands = isolationPFCands.size();
       std::cout << "isolationPFCands = " << numPFCands << std::endl;
-      for ( size_t iPFCand = 0; iPFCand < numPFCands; ++iPFCand ) {
-	const reco::PFCandidatePtr& pfCand = isolationPFCands.at(iPFCand);
-	std::cout << " pfCand #" << iPFCand << " (" << pfCand.id() << ":" << pfCand.key() << "):" 
+      for (const auto& pfCand : isolationPFCands) {
+	std::cout << " pfCand (" << pfCand.id() << ":" << pfCand.key() << "):" 
 		  << " Pt = " << pfCand->pt() << ", eta = " << pfCand->eta() << ", phi = " << pfCand->phi() << std::endl;
       }
       std::cout << " ranks = " << format_vT(ranks_) << std::endl;
@@ -242,7 +241,7 @@ void RecoTauCleanerImpl<Prod, TauType>::produce(edm::Event& evt, const edm::Even
   }
 
   // Get the input collection of all taus. Some are from the same PFJet. We must clean them.
-  edm::Handle<reco::PFTauCollection> inputTaus;
+  edm::Handle<std::vector<TauType> > inputTaus;
   evt.getByToken(tau_token, inputTaus);
 
   // Sort the input tau refs according to our predicate
@@ -307,8 +306,12 @@ void RecoTauCleanerImpl<Prod, TauType>::produce(edm::Event& evt, const edm::Even
 typedef RecoTauCleanerImpl<reco::PFTauCollection, reco::PFTau> RecoTauCleaner;
 typedef RecoTauCleanerImpl<reco::PFTauRefVector, reco::PFTau> RecoTauRefCleaner;
 
+typedef RecoTauCleanerImpl<reco::PFBaseTauCollection, reco::PFBaseTau> RecoBaseTauCleaner;
+typedef RecoTauCleanerImpl<reco::PFBaseTauRefVector, reco::PFBaseTau> RecoBaseTauRefCleaner;
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_FWK_MODULE(RecoTauCleaner);
 DEFINE_FWK_MODULE(RecoTauRefCleaner);
-
+DEFINE_FWK_MODULE(RecoBaseTauCleaner);
+DEFINE_FWK_MODULE(RecoBaseTauRefCleaner);

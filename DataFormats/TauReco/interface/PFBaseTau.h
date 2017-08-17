@@ -29,6 +29,10 @@ namespace reco { namespace tau {
   class PFRecoTauGenericEnergyAlgorithmPlugin;
 }} 
 
+namespace reco {
+  class PFBaseTauDiscriminator;
+}
+
 namespace pat {
     class Jet;
 }
@@ -58,6 +62,8 @@ class PFBaseTau : public BaseTau {
     };
 
     typedef std::vector<pat::Jet> TauJetCollection;
+    typedef PFBaseTauDiscriminator TauDiscriminator;
+    typedef Candidate TauCandidateType;
 
     PFBaseTau();
     PFBaseTau(Charge q,const LorentzVector &,const Point & = Point( 0, 0, 0 ) );

@@ -32,6 +32,10 @@ namespace reco { namespace tau {
 }} 
 
 namespace reco {
+  class PFTauDiscriminator;
+}
+
+namespace reco {
 
 class PFTau : public BaseTau {
   public:
@@ -56,6 +60,8 @@ class PFTau : public BaseTau {
     };
 
     typedef PFJetCollection TauJetCollection;
+    typedef PFTauDiscriminator TauDiscriminator;
+    typedef PFCandidate TauCandidateType;
 
     PFTau();
     PFTau(Charge q,const LorentzVector &,const Point & = Point( 0, 0, 0 ) );

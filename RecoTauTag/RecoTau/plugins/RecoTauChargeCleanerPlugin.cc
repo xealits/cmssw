@@ -66,3 +66,4 @@ typedef RecoTauGenericChargeCleanerPlugin<reco::PFBaseTau> RecoBaseTauChargeClea
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 DEFINE_EDM_PLUGIN(RecoTauCleanerPluginFactory, reco::tau::RecoTauChargeCleanerPlugin, "RecoTauChargeCleanerPlugin");
+DEFINE_EDM_PLUGIN(RecoBaseTauCleanerPluginFactory, reco::tau::RecoBaseTauChargeCleanerPlugin, "RecoBaseTauChargeCleanerPlugin");

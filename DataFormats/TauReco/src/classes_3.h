@@ -14,6 +14,7 @@
 #include "DataFormats/TauReco/interface/CaloTauDiscriminatorAgainstElectron.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminatorByIsolation.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
+#include "DataFormats/TauReco/interface/PFBaseTauDiscriminator.h"
 #include "DataFormats/Common/interface/AssociationMap.h"
 #include "DataFormats/Common/interface/Association.h"
 #include "DataFormats/Common/interface/Ptr.h"
@@ -72,8 +73,18 @@ namespace DataFormats_TauReco {
     reco::PFTauDiscriminatorRefVector                pftdiscr_rv;
     edm::Wrapper<reco::PFTauDiscriminator>           pftdiscr_w;
 
+    reco::PFBaseTauDiscriminatorBase                     pfbtdiscr_b;
+    reco::PFBaseTauDiscriminator                         pfbtdiscr_o;
+    reco::PFBaseTauDiscriminatorRef                      pfbtdiscr_r;
+    reco::PFBaseTauDiscriminatorRefProd                  pfbtdiscr_rp;
+    reco::PFBaseTauDiscriminatorRefVector                pfbtdiscr_rv;
+    edm::Wrapper<reco::PFBaseTauDiscriminator>           pfbtdiscr_w;
+
     std::pair<reco::PFTauRef, float>                              pftdiscr_p;
     std::vector<std::pair<reco::PFTauRef, float> >                pftdiscr_v;
+
+    std::pair<reco::PFBaseTauRef, float>                              pfbtdiscr_p;
+    std::vector<std::pair<reco::PFBaseTauRef, float> >                pfbtdiscr_v;
 
     reco::JetPiZeroAssociationBase                     jetPiZeroAssoc_b;
     reco::JetPiZeroAssociation                         jetPiZeroAssoc_o;
