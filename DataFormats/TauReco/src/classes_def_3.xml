@@ -180,6 +180,17 @@
   <class name="std::pair<reco::PFTauRef, reco::PFTauTransverseImpactParameterRef >"/>
   <class name="std::vector<std::pair<reco::PFTauRef,  reco::PFTauTransverseImpactParameterRef > >" />
 
+
+  <class name="reco::PFBaseTauTIPAssociation">
+    <field name="transientVector_" transient="true"/>
+  </class>
+  <class name="reco::PFBaseTauTIPAssociationRef"/>
+  <class name="reco::PFBaseTauTIPAssociationRefProd"/>
+  <class name="reco::PFBaseTauTIPAssociationRefVector"/>
+  <class name="edm::Wrapper<reco::PFBaseTauTIPAssociation>"/>
+  <class name="std::pair<reco::PFBaseTauRef, reco::PFTauTransverseImpactParameterRef >"/>
+  <class name="std::vector<std::pair<reco::PFBaseTauRef,  reco::PFTauTransverseImpactParameterRef > >" />
+
   <class name="reco::PFTauVertexAssociation">
     <field name="transientVector_" transient="true"/>
   </class>

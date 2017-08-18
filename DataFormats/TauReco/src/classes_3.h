@@ -6,6 +6,7 @@
 #include "DataFormats/TauReco/interface/BaseTau.h"
 #include "DataFormats/TauReco/interface/CaloTau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
+#include "DataFormats/TauReco/interface/PFBaseTau.h"
 #include "DataFormats/TauReco/interface/PFTauDecayMode.h"
 #include "DataFormats/TauReco/interface/RecoTauPiZero.h"
 #include "DataFormats/TauReco/interface/RecoTauPiZeroFwd.h"
@@ -187,6 +188,15 @@ namespace DataFormats_TauReco {
 
     std::pair<reco::PFTauRef, reco::PFTauTransverseImpactParameterRef >                pftaupairtip_o;
     std::vector<std::pair<reco::PFTauRef, reco::PFTauTransverseImpactParameterRef > >  pftaupairtip_v;
+
+    reco::PFBaseTauTIPAssociation                         pfbtautipass_o;
+    reco::PFBaseTauTIPAssociationRef                      pfbtautipass_r;
+    reco::PFBaseTauTIPAssociationRefProd                  pfbtautipass_rp;
+    reco::PFBaseTauTIPAssociationRefVector                pfbtautipass_rv;
+    edm::Wrapper<reco::PFBaseTauTIPAssociation>           pfbtautipass_w;
+
+    std::pair<reco::PFBaseTauRef, reco::PFTauTransverseImpactParameterRef >                pfbtaupairtip_o;
+    std::vector<std::pair<reco::PFBaseTauRef, reco::PFTauTransverseImpactParameterRef > >  pfbtaupairtip_v;
 
     reco::PFTauVertexAssociation                      pftauvertexass_o;
     reco::PFTauVertexAssociationRef                   pftauvertexass_r;
