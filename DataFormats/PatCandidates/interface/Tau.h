@@ -56,7 +56,8 @@ namespace pat {
     /// make friends with PATTauProducer so that it can set the initial
     /// jet energy scale unequal to raw calling the private initializeJEC
     /// function, which should be non accessible to any other user
-    friend class PATTauProducer;
+    template<class TauType>
+    friend class PATTauGenericProducer;
 
     public:
 
