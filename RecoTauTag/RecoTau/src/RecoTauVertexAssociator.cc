@@ -446,18 +446,14 @@ RecoTauVertexAssociator::associatedVertex(const reco::PFTau& tau, bool useJet) c
 reco::VertexRef
 RecoTauVertexAssociator::associatedVertex(const reco::PFBaseTau& tau, bool useJet) const 
 {
-  // JAN - FIXME - this needs to be completely re-implemented
-  // if ( !useJet ) {
-  //   if ( tau.leadPFChargedHadrCand().isNonnull() ) {
-  //     if ( tau.leadPFChargedHadrCand()->trackRef().isNonnull() )
-  // return associatedVertex( reco::TrackBaseRef( tau.leadPFChargedHadrCand()->trackRef() ) );
-  //     else if (  tau.leadPFChargedHadrCand()->gsfTrackRef().isNonnull() )
-  // return associatedVertex( reco::TrackBaseRef( tau.leadPFChargedHadrCand()->gsfTrackRef() ) );
-  //   }
-  // }
-  // MB: use vertex associated to a given jet if explicitely requested or in case of missing leading track
-  // // FIXME workaround for HLT which does not use updated data format
-  // if ( jetRef.isNull() ) jetRef = tau.pfTauTagInfoRef()->pfjetRef();
+  if ( !useJet ) {
+    if ( tau.leadPFChargedHadrCand().isNonnull() ) {
+      const reco::Track* track = getTrack(*tau.leadPFChargedHadrCand());
+      if (track)
+        return associatedVertex(track);
+    }
+  }
+
   return associatedVertex(*tau.jetRef());
 }
 
