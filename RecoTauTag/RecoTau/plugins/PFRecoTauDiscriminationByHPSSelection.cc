@@ -9,6 +9,9 @@
 #include "DataFormats/TauReco/interface/PFRecoTauChargedHadron.h"
 #include "DataFormats/TauReco/interface/PFRecoTauChargedHadronFwd.h"
 
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
 namespace {
   // Apply a hypothesis on the mass of the strips.
   math::XYZTLorentzVector applyMassConstraint(const math::XYZTLorentzVector& vec, double mass) 
@@ -63,16 +66,19 @@ class TauDiscriminationByHPSSelection : public TauDiscriminationProducerBase<Tau
 };
 
 namespace {
-  inline const reco::TrackBaseRef getTrack(const reco::Candidate& cand)
+  inline const reco::Track* getTrack(const reco::Candidate& cand)
   {
     const reco::PFCandidate* pfCandPtr = dynamic_cast<const reco::PFCandidate*>(&cand);
     if (pfCandPtr) {
-      if      ( pfCandPtr->trackRef().isNonnull()    ) return reco::TrackBaseRef(pfCandPtr->trackRef());
-      else if ( pfCandPtr->gsfTrackRef().isNonnull() ) return reco::TrackBaseRef(pfCandPtr->gsfTrackRef());
-      else return reco::TrackBaseRef();
+      if      ( pfCandPtr->trackRef().isNonnull()    ) return pfCandPtr->trackRef().get();
+      else if ( pfCandPtr->gsfTrackRef().isNonnull() ) return pfCandPtr->gsfTrackRef().get();
+      else return nullptr;
     }
-    // JAN - FIXME: Add method for miniAOD PackedCandidate
-    return reco::TrackBaseRef();
+    const pat::PackedCandidate* packedCand = dynamic_cast<const pat::PackedCandidate*>(&cand);
+    if (packedCand && packedCand->hasTrackDetails())
+    	return &packedCand->pseudoTrack();
+
+    return nullptr;
   }
 }
 
@@ -338,7 +344,7 @@ TauDiscriminationByHPSSelection<TauType>::discriminate(const edm::Ref<std::vecto
     const auto& chargedHadrCands = tau->signalPFChargedHadrCands();
     for (const auto& chargedHadrCand : chargedHadrCands) {
       const auto& track = getTrack(*chargedHadrCand);
-      if ( track.isNonnull() ) {
+      if ( track ) {
 	numPixelHits += track->hitPattern().numberOfValidPixelHits();
       }
     }

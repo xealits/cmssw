@@ -57,18 +57,19 @@ void RecoTauGenericImpactParameterSignificancePlugin<TauType>::beginEvent() {
 
 namespace 
 {
-  // JAN - FIXME - this method is needed multiple times
-
-  inline const reco::TrackBaseRef getTrack(const Candidate& cand)
+  inline const reco::Track* getTrack(const Candidate& cand)
   {
     const PFCandidate* pfCandPtr = dynamic_cast<const PFCandidate*>(&cand);
     if (pfCandPtr) {
-      if      ( pfCandPtr->trackRef().isNonnull()    ) return reco::TrackBaseRef(pfCandPtr->trackRef());
-      // else if ( pfCandPtr->gsfTrackRef().isNonnull() ) return reco::TrackBaseRef(pfCandPtr->gsfTrackRef());
-      else return reco::TrackBaseRef();
+      if      ( pfCandPtr->trackRef().isNonnull()    ) return pfCandPtr->trackRef().get();
+      else return nullptr;
     }
-    // JAN - FIXME: Add method for miniAOD PackedCandidate
-    return reco::TrackBaseRef();
+    
+    const pat::PackedCandidate* packedCand = dynamic_cast<const pat::PackedCandidate*>(&cand);
+    if (packedCand && packedCand->hasTrackDetails())
+    	return &packedCand->pseudoTrack();
+
+    return nullptr;
   }
 }
 
@@ -76,9 +77,9 @@ template<class TauType>
 void RecoTauGenericImpactParameterSignificancePlugin<TauType>::operator()(TauType& tau) const {
   // Get the transient lead track
   if (tau.leadPFChargedHadrCand().isNonnull()) {
-    TrackBaseRef leadTrack = getTrack(*tau.leadPFChargedHadrCand());
-    if (leadTrack.isNonnull()) {
-      const TransientTrack track = builder_->build(*leadTrack);
+    const reco::Track* leadTrack = getTrack(*tau.leadPFChargedHadrCand());
+    if (leadTrack) {
+      const TransientTrack track = builder_->build(leadTrack);
       GlobalVector direction(tau.jetRef()->px(), tau.jetRef()->py(),
                              tau.jetRef()->pz());
       VertexRef pv = vertexAssociator_.associatedVertex(tau);

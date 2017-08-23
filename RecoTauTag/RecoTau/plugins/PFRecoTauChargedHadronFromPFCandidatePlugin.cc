@@ -199,7 +199,8 @@ PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronF
     else algo = PFRecoTauChargedHadron::kPFNeutralHadron;
     std::auto_ptr<PFRecoTauChargedHadron> chargedHadron(new PFRecoTauChargedHadron(**cand, algo));
     
-    // JAN - FIXME work on this. This must be adapted carefully to MiniAOD packed candidates
+    // JAN: Save the track ref only in the PF case. For PackedCandidate/miniAOD,
+    // need to get the track later using the pseudoTrack method (downstream)
     const reco::PFCandidate* pfCand = dynamic_cast<const reco::PFCandidate*>(&**cand);
     if (pfCand) {
       if ( pfCand->trackRef().isNonnull() ) chargedHadron->track_ = edm::refToPtr(pfCand->trackRef());
@@ -207,9 +208,8 @@ PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronF
       else if ( pfCand->muonRef().isNonnull() && pfCand->muonRef()->globalTrack().isNonnull() ) chargedHadron->track_ = edm::refToPtr(pfCand->muonRef()->globalTrack());
       else if ( pfCand->muonRef().isNonnull() && pfCand->muonRef()->outerTrack().isNonnull()  ) chargedHadron->track_ = edm::refToPtr(pfCand->muonRef()->outerTrack());
       else if ( pfCand->gsfTrackRef().isNonnull() ) chargedHadron->track_ = edm::refToPtr(pfCand->gsfTrackRef());
-    
-      
     }
+
     chargedHadron->positionAtECALEntrance_ = atECALEntrance(&**cand, bField_);
     chargedHadron->chargedPFCandidate_ = (*cand);
     chargedHadron->addDaughter(*cand);

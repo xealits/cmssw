@@ -31,6 +31,21 @@ RecoTauGenericSoftTwoProngTausCleanerPlugin<TauType>::RecoTauGenericSoftTwoProng
   minTrackPt_ = pset.getParameter<double>("minTrackPt");
 }
 
+namespace {
+  const reco::Track* getTrackFromChargedHadron(const reco::PFRecoTauChargedHadron& chargedHadron) {
+    // Charged hadron made from track (reco::Track) - RECO/AOD only
+    if ( chargedHadron.getTrack().isNonnull()) {
+      return chargedHadron.getTrack().get();
+    }
+    const pat::PackedCandidate* chargedPFPCand = dynamic_cast<const pat::PackedCandidate*> (&*chargedHadron.getChargedPFCandidate());
+    if (chargedPFPCand) {
+        if (chargedPFPCand->hasTrackDetails())
+          return &chargedPFPCand->pseudoTrack();
+    }
+    return nullptr;
+  }
+}
+
 template<class TauType>
 double RecoTauGenericSoftTwoProngTausCleanerPlugin<TauType>::operator()(const edm::Ref<std::vector<TauType> >& tau) const 
 {
@@ -39,7 +54,8 @@ double RecoTauGenericSoftTwoProngTausCleanerPlugin<TauType>::operator()(const ed
   if ( chargedHadrons.size() == 2 ) {
     for ( std::vector<PFRecoTauChargedHadron>::const_iterator chargedHadron = chargedHadrons.begin();
 	  chargedHadron != chargedHadrons.end(); ++chargedHadron ) {
-      if ( !(chargedHadron->getTrack().get() && chargedHadron->getTrack()->pt() > minTrackPt_) ) result += 1.e+3;
+      const reco::Track* track = getTrackFromChargedHadron(*chargedHadron);
+      if ( !(track && track->pt() > minTrackPt_) ) result += 1.e+3;
     }
   }
   return result;

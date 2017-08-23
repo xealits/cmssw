@@ -20,6 +20,7 @@
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/TauReco/interface/RecoTauPiZero.h"
@@ -180,18 +181,20 @@ namespace
     }
   }
   
-  // JAN - FIXME - this method is needed multiple times
-
-  inline const reco::TrackBaseRef getTrack(const Candidate& cand)
+  inline const reco::Track* getTrack(const Candidate& cand)
   {
     const PFCandidate* pfCandPtr = dynamic_cast<const PFCandidate*>(&cand);
     if (pfCandPtr) {
-      if      ( pfCandPtr->trackRef().isNonnull()    ) return reco::TrackBaseRef(pfCandPtr->trackRef());
-      else if ( pfCandPtr->gsfTrackRef().isNonnull() ) return reco::TrackBaseRef(pfCandPtr->gsfTrackRef());
-      else return reco::TrackBaseRef();
+      if      ( pfCandPtr->trackRef().isNonnull()    ) return pfCandPtr->trackRef().get();
+      else if ( pfCandPtr->gsfTrackRef().isNonnull() ) return pfCandPtr->gsfTrackRef().get();
+      else return nullptr;
     }
-    // JAN - FIXME: Add method for miniAOD PackedCandidate
-    return reco::TrackBaseRef();
+
+    const pat::PackedCandidate* packedCand = dynamic_cast<const pat::PackedCandidate*>(&cand);
+    if (packedCand && packedCand->hasTrackDetails())
+    	return &packedCand->pseudoTrack();
+
+    return nullptr;
   }
 }
 
@@ -222,8 +225,8 @@ RecoTauPiZeroStripPlugin2::return_type RecoTauPiZeroStripPlugin2::operator()(con
     if ( (*cand)->et() > minGammaEtStripSeed_ ) {
       if ( verbosity_ >= 2 ) {
 	edm::LogPrint("RecoTauPiZeroStripPlugin2") << "--> assigning seedCandId = " << seedCands.size() ;
-        const reco::TrackBaseRef candTrack = getTrack(**cand);
-        if ( candTrack.isNonnull() ) {
+        const reco::Track* candTrack = getTrack(**cand);
+        if ( candTrack ) {
 	  edm::LogPrint("RecoTauPiZeroStripPlugin2") << "track: Pt = " << candTrack->pt() << " eta = " << candTrack->eta() << ", phi = " << candTrack->phi() << ", charge = " << candTrack->charge() ;
 	  edm::LogPrint("RecoTauPiZeroStripPlugin2") << " (dZ = " << candTrack->dz(vertexAssociator_.associatedVertex(jet)->position()) << ", dXY = " << candTrack->dxy(vertexAssociator_.associatedVertex(jet)->position()) << "," 
 		    << " numHits = " << candTrack->hitPattern().numberOfValidTrackerHits() << ", numPxlHits = " << candTrack->hitPattern().numberOfValidPixelHits() << "," 

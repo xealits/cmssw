@@ -29,6 +29,7 @@
 #include "DataFormats/TauReco/interface/PFRecoTauChargedHadron.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
@@ -134,6 +135,31 @@ PFRecoTauChargedHadronProducer::PFRecoTauChargedHadronProducer(const edm::Parame
   produces<reco::PFJetChargedHadronAssociation>();
 }
 
+namespace {
+  const reco::Track* getTrackFromChargedHadron(const reco::PFRecoTauChargedHadron& nextChargedHadron) {
+    if ( nextChargedHadron.getChargedPFCandidate().isNonnull() ) {
+      const reco::PFCandidate* chargedPFCand = dynamic_cast<const reco::PFCandidate*> (&*nextChargedHadron.getChargedPFCandidate());
+      if (chargedPFCand) {
+        if ( chargedPFCand->trackRef().isNonnull() ) return chargedPFCand->trackRef().get();
+        else if ( chargedPFCand->muonRef().isNonnull() && chargedPFCand->muonRef()->innerTrack().isNonnull()  ) return chargedPFCand->muonRef()->innerTrack().get();
+        else if ( chargedPFCand->muonRef().isNonnull() && chargedPFCand->muonRef()->globalTrack().isNonnull() ) return chargedPFCand->muonRef()->globalTrack().get();
+        else if ( chargedPFCand->muonRef().isNonnull() && chargedPFCand->muonRef()->outerTrack().isNonnull()  ) return chargedPFCand->muonRef()->outerTrack().get();
+        else if ( chargedPFCand->gsfTrackRef().isNonnull() ) return chargedPFCand->gsfTrackRef().get();
+      }
+      const pat::PackedCandidate* chargedPFPCand = dynamic_cast<const pat::PackedCandidate*> (&*nextChargedHadron.getChargedPFCandidate());
+      if (chargedPFPCand) {
+        if (chargedPFPCand->hasTrackDetails())
+          return &chargedPFPCand->pseudoTrack();
+      }
+    }
+    // Charged hadron made from track (reco::Track) - RECO/AOD only
+    if ( nextChargedHadron.getTrack().isNonnull()) {
+      return nextChargedHadron.getTrack().get();
+    }
+    return nullptr;
+  }
+}
+
 void PFRecoTauChargedHadronProducer::produce(edm::Event& evt, const edm::EventSetup& es) 
 {
   if ( verbosity_ ) {
@@ -222,21 +248,7 @@ void PFRecoTauChargedHadronProducer::produce(edm::Event& evt, const edm::EventSe
       // discard candidates which fail final output selection
       if ( !(*outputSelector_)(*nextChargedHadron) ) continue;
 
-      // JAN - FIXME - need to check this for MiniAOD
-      const reco::Track* track = 0;
-      if ( nextChargedHadron->getChargedPFCandidate().isNonnull() ) {
-	const reco::PFCandidate* chargedPFCand = dynamic_cast<const reco::PFCandidate*> (&*nextChargedHadron->getChargedPFCandidate());
-        if (chargedPFCand) {
-          if ( chargedPFCand->trackRef().isNonnull() ) track = chargedPFCand->trackRef().get();
-          else if ( chargedPFCand->muonRef().isNonnull() && chargedPFCand->muonRef()->innerTrack().isNonnull()  ) track = chargedPFCand->muonRef()->innerTrack().get();
-          else if ( chargedPFCand->muonRef().isNonnull() && chargedPFCand->muonRef()->globalTrack().isNonnull() ) track = chargedPFCand->muonRef()->globalTrack().get();
-          else if ( chargedPFCand->muonRef().isNonnull() && chargedPFCand->muonRef()->outerTrack().isNonnull()  ) track = chargedPFCand->muonRef()->outerTrack().get();
-          else if ( chargedPFCand->gsfTrackRef().isNonnull() ) track = chargedPFCand->gsfTrackRef().get();
-        }
-      } 
-      if ( nextChargedHadron->getTrack().isNonnull() && !track ) {
-	track = nextChargedHadron->getTrack().get();
-      }
+      const reco::Track* track = getTrackFromChargedHadron(*nextChargedHadron);
 
       // discard candidate in case its track is "used" by any ChargedHadron in the clean collection
       bool isTrack_overlap = false;
