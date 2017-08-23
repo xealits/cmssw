@@ -148,7 +148,6 @@ void PFRecoTauGenericEnergyAlgorithmPlugin<TauType>::operator()(TauType& tau) co
     bool isSignalPFCand = false;
     const auto& signalPFCands = tau.signalPFCands();
     for (const auto& signalPFCand : signalPFCands) {
-      // JAN - FIXME - check Ptr comparison works
       if ( isPtrEqual(jetConstituent, signalPFCand) ) isSignalPFCand = true;
     }
     if ( isSignalPFCand ) continue;

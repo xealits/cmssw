@@ -238,15 +238,19 @@ PFRecoTauChargedHadronFromPFCandidatePlugin::return_type PFRecoTauChargedHadronF
 	  maxUnmatchedBlockElements = maxUnmatchedBlockElementsPhoton_;
 	  minMergeEt = minMergeGammaEt_;
 	}
-        // JAN - FIXME - block matching possible in miniAOD? probably not?? but is it important after all?
-        const reco::PFCandidate* pfCHCand = dynamic_cast<const reco::PFCandidate*>(&*chargedHadron->chargedPFCandidate_);
-        const reco::PFCandidate* pfJetConstituent = dynamic_cast<const reco::PFCandidate*>(&**jetConstituent);
-        if (pfCHCand && pfJetConstituent) {
-        	if ( (*jetConstituent)->et() > minMergeEt && 
-        	     (dR < dRmerge || isMatchedByBlockElement(*pfJetConstituent, *pfCHCand, minBlockElementMatches, minBlockElementMatches, maxUnmatchedBlockElements)) ) {
-        	  chargedHadron->neutralPFCandidates_.push_back(*jetConstituent);
-        	  chargedHadron->addDaughter(*jetConstituent);
-        	}
+        
+        if ( (*jetConstituent)->et() > minMergeEt) {
+          const reco::PFCandidate* pfCHCand = dynamic_cast<const reco::PFCandidate*>(&*chargedHadron  ->chargedPFCandidate_);
+          const reco::PFCandidate* pfJetConstituent = dynamic_cast<const reco::PFCandidate*>(&**  jetConstituent);
+          bool isBlockMatched = false;
+          // FIXME - block matching not possible in miniAOD, but remains to be
+          // seen if it makes a difference
+          if (pfCHCand && pfJetConstituent)
+            isBlockMatched = isMatchedByBlockElement(*pfJetConstituent, *pfCHCand, minBlockElementMatches, minBlockElementMatches,   maxUnmatchedBlockElements);
+          if (dR < dRmerge || isBlockMatched) {
+	    chargedHadron->neutralPFCandidates_.push_back(*jetConstituent);
+	    chargedHadron->addDaughter(*jetConstituent);
+          }
         }
       }
     }
