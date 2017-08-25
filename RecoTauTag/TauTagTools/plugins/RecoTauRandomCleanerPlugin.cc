@@ -13,7 +13,7 @@
 
 namespace reco { namespace tau {
 
-class RecoTauRandomCleanerPlugin : public RecoTauCleanerPlugin {
+class RecoTauRandomCleanerPlugin : public RecoTauCleanerPlugin<reco::PFTau> {
   public:
   RecoTauRandomCleanerPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC);
     virtual ~RecoTauRandomCleanerPlugin(){}
@@ -24,7 +24,7 @@ class RecoTauRandomCleanerPlugin : public RecoTauCleanerPlugin {
 };
 
 RecoTauRandomCleanerPlugin::RecoTauRandomCleanerPlugin(
-  const edm::ParameterSet& pset, edm::ConsumesCollector &&iC):RecoTauCleanerPlugin(pset,std::move(iC)) {
+  const edm::ParameterSet& pset, edm::ConsumesCollector &&iC):RecoTauCleanerPlugin<reco::PFTau>(pset,std::move(iC)) {
   seed_ = pset.exists("seed") ? pset.getParameter<unsigned int>("seed") : 1234;
 }
 

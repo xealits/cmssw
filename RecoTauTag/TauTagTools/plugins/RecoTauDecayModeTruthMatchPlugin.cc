@@ -26,7 +26,7 @@
 
 namespace tautools {
 
-class RecoTauDecayModeTruthMatchPlugin : public reco::tau::RecoTauCleanerPlugin
+class RecoTauDecayModeTruthMatchPlugin : public reco::tau::RecoTauCleanerPlugin<reco::PFTau>
 {
   public:
   explicit RecoTauDecayModeTruthMatchPlugin(const edm::ParameterSet& pset, edm::ConsumesCollector &&iC);
@@ -42,7 +42,7 @@ class RecoTauDecayModeTruthMatchPlugin : public reco::tau::RecoTauCleanerPlugin
 
 // ctor
 RecoTauDecayModeTruthMatchPlugin::RecoTauDecayModeTruthMatchPlugin(
-								   const edm::ParameterSet& pset, edm::ConsumesCollector &&iC): RecoTauCleanerPlugin(pset,std::move(iC)),
+								   const edm::ParameterSet& pset, edm::ConsumesCollector &&iC): RecoTauCleanerPlugin<reco::PFTau>(pset,std::move(iC)),
   matchingSrc_(pset.getParameter<edm::InputTag>("matching")) {}
 
 // Called by base class at the beginning of each event
