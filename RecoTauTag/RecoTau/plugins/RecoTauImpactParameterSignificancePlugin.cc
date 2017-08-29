@@ -50,7 +50,7 @@ void RecoTauGenericImpactParameterSignificancePlugin<TauType>::beginEvent() {
   vertexAssociator_.setEvent(*this->evt());
   // Get tranisent track builder.
   edm::ESHandle<TransientTrackBuilder> myTransientTrackBuilder;
-  this->evtSetup()->get<TransientTrackRecord>().get("TransientTrackBuilder",
+  this->evtSetup()->template get<TransientTrackRecord>().get("TransientTrackBuilder",
                                               myTransientTrackBuilder);
   builder_= myTransientTrackBuilder.product();
 }
