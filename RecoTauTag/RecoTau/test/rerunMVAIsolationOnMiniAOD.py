@@ -2,6 +2,13 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("rerunMVAIsolationOnMiniAOD")
 
+## Geometry and Detector Conditions (needed for a few tau reco steps)
+process.load("Configuration.Geometry.GeometryRecoDB_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
+process.load("Configuration.StandardSequences.MagneticField_cff")
+
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.Geometry.GeometrySimDB_cff')
@@ -16,6 +23,10 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         'file:patMiniAOD_standard.root'
     )
+)
+
+process.TFileService = cms.Service("TFileService",
+  fileName = cms.string('rerunTauID_miniAOD.root')
 )
 
 #from Configuration.AlCa.GlobalTag import GlobalTag
@@ -78,7 +89,8 @@ process.rerunDiscriminationAgainstElectronMVA6 = patTauDiscriminationAgainstElec
     minMVANoEleMatchWgWOgsfEC  = cms.double(0.0),
     minMVAWOgWgsfEC            = cms.double(0.0),
     minMVAWgWgsfEC             = cms.double(0.0),
-    srcElectrons = cms.InputTag('slimmedElectrons')
+    srcElectrons = cms.InputTag('slimmedElectrons'),
+    usePhiAtEcalEntranceExtrapolation = cms.bool(True)
 )
 
 process.rerunDiscriminationByIsolationMVArun2v1Loose = process.rerunDiscriminationByIsolationMVArun2v1VLoose.clone()
@@ -108,8 +120,37 @@ process.rerunMVAIsolationOnMiniAOD = cms.EDAnalyzer('rerunMVAIsolationOnMiniAOD'
 process.rerunMVAIsolationOnMiniAOD.verbosity = cms.int32(0)
 process.rerunMVAIsolationOnMiniAOD.additionalCollectionsAvailable = cms.bool(True)
 
+# embed new id's into tau
+embedID = cms.EDProducer("PATTauIDEmbedder",
+   src = cms.InputTag('slimmedTaus'),
+   tauIDSources = cms.PSet(
+      byIsolationMVArun2v1DBoldDMwLTrawNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1raw'),
+      byVLooseIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1VLoose'),
+      byLooseIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1Loose'),
+      byMediumIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1Medium'),
+      byTightIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1Tight'),
+      byVTightIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1VTight'),
+      byVVTightIsolationMVArun2v1DBoldDMwLTNew = cms.InputTag('rerunDiscriminationByIsolationMVArun2v1VVTight'),
+      againstElectronMVA6RawNew = cms.InputTag('rerunDiscriminationAgainstElectronMVA6')
+   ),
+)
+setattr(process, "newTauIDsEmbedded", embedID)
+
+## added for mvaIsolation on miniAOD testing
+process.out = cms.OutputModule("PoolOutputModule",
+                               fileName = cms.untracked.string('patTuple_newTauIDs.root'),
+                               ## save only events passing the full path
+                               #SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+                               ## save PAT output; you need a '*' to unpack the list of commands
+                               ## 'patEventContent'
+                               outputCommands = cms.untracked.vstring('drop *', "keep *_newTauIDsEmbedded_*_*")
+)
+
 process.p = cms.Path(
    process.rerunMvaIsolation2SeqRun2
   *process.rerunDiscriminationAgainstElectronMVA6
+  *process.newTauIDsEmbedded
   *process.rerunMVAIsolationOnMiniAOD
 )
+
+process.outpath = cms.EndPath(process.out)
