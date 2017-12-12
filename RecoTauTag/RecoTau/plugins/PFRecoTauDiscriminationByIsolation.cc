@@ -52,22 +52,15 @@ class PFRecoTauDiscriminationByIsolation : public PFTauDiscriminationProducerBas
     applySumPtCut_ = pset.getParameter<bool>("applySumPtCut");
     maximumSumPt_ = pset.getParameter<double>("maximumSumPtCut");
 
-    applyRelativeSumPtCut_ = pset.getParameter<bool>(
-      "applyRelativeSumPtCut");
-    maximumRelativeSumPt_ = pset.getParameter<double>(
-      "relativeSumPtCut");
+    applyRelativeSumPtCut_ = pset.getParameter<bool>("applyRelativeSumPtCut");
+    maximumRelativeSumPt_ = pset.getParameter<double>("relativeSumPtCut");
     offsetRelativeSumPt_ = pset.getParameter<double>("relativeSumPtOffset");
 
-    storeRawOccupancy_ = pset.exists("storeRawOccupancy") ?
-      pset.getParameter<bool>("storeRawOccupancy") : false;
-    storeRawSumPt_ = pset.exists("storeRawSumPt") ?
-      pset.getParameter<bool>("storeRawSumPt") : false;
-    storeRawPUsumPt_ = pset.exists("storeRawPUsumPt") ?
-      pset.getParameter<bool>("storeRawPUsumPt") : false;
-    storeRawFootprintCorrection_ = pset.exists("storeRawFootprintCorrection") ?
-      pset.getParameter<bool>("storeRawFootprintCorrection") : false;
-    storeRawPhotonSumPt_outsideSignalCone_ = pset.exists("storeRawPhotonSumPt_outsideSignalCone") ?
-      pset.getParameter<bool>("storeRawPhotonSumPt_outsideSignalCone") : false;
+    storeRawOccupancy_                     = pset.getParameter<bool>("storeRawOccupancy");
+    storeRawSumPt_                         = pset.getParameter<bool>("storeRawSumPt");
+    storeRawPUsumPt_                       = pset.getParameter<bool>("storeRawPUsumPt");
+    storeRawFootprintCorrection_           = pset.getParameter<bool>("storeRawFootprintCorrection");
+    storeRawPhotonSumPt_outsideSignalCone_ = pset.getParameter<bool>("storeRawPhotonSumPt_outsideSignalCone");
 
     // Sanity check on requested options.  We can't apply cuts and store the
     // raw output at the same time
