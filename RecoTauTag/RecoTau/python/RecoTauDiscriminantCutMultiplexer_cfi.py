@@ -32,5 +32,6 @@ recoTauDiscriminantCutMultiplexer = cms.EDProducer(
             category = cms.uint32(1),
             cut = cms.double(0.2),
         ),
-    )
+    ),
+    verbosity = cms.int32(0)
 )

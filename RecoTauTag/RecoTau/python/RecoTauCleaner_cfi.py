@@ -27,5 +27,7 @@ RecoTauCleaner = cms.EDProducer("RecoTauCleaner",
         cleaners.stripMultiplicity,
         # Take most isolated tau
         cleaners.combinedIsolation
-    )
+    ),
+    tolerance = cms.double(0),
+    verbosity = cms.int32(0)
 )
