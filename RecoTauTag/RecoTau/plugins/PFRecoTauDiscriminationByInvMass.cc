@@ -15,27 +15,25 @@ class PFRecoTauDiscriminationByInvMass: public PFTauDiscriminationProducerBase {
     explicit PFRecoTauDiscriminationByInvMass(const edm::ParameterSet& pset)
         :PFTauDiscriminationProducerBase(pset) {
       // If select is not set, just return the invariant mass
-      cut_ = pset.exists("select");
-      if (cut_) {
-        const edm::ParameterSet &select = pset.getParameter<edm::ParameterSet>
-            ("select");
-        // Get default cuts
-        min_default_ = select.getParameter<double>("min");
-        max_default_ = select.getParameter<double>("max");
-        // Get decay mode specific cuts
-        std::vector<std::string> decayModeCutNames =
-            select.getParameterNamesForType<edm::ParameterSet>();
-        BOOST_FOREACH(const std::string& dmName, decayModeCutNames) {
-          const edm::ParameterSet &dmPSet =
-              select.getParameter<edm::ParameterSet>(dmName);
-          unsigned int nCharged = dmPSet.getParameter<unsigned int>("charged");
-          unsigned int nPiZero = dmPSet.getParameter<unsigned int>("pizeros");
-          double minCut = dmPSet.getParameter<double>("min");
-          double maxCut = dmPSet.getParameter<double>("max");
-          // Add our dm-specific cut to the map
-          decayModeCuts_[std::make_pair(nCharged, nPiZero)] =
-              std::make_pair(minCut, maxCut);
-        }
+      cut_ = true; // there was a check pset.e_xists "select" -- the parameter is in defaults, but leaving this cut_ atribute for consistency
+      const edm::ParameterSet &select = pset.getParameter<edm::ParameterSet>
+          ("select");
+      // Get default cuts
+      min_default_ = select.getParameter<double>("min");
+      max_default_ = select.getParameter<double>("max");
+      // Get decay mode specific cuts
+      std::vector<std::string> decayModeCutNames =
+          select.getParameterNamesForType<edm::ParameterSet>();
+      BOOST_FOREACH(const std::string& dmName, decayModeCutNames) {
+        const edm::ParameterSet &dmPSet =
+            select.getParameter<edm::ParameterSet>(dmName);
+        unsigned int nCharged = dmPSet.getParameter<unsigned int>("charged");
+        unsigned int nPiZero = dmPSet.getParameter<unsigned int>("pizeros");
+        double minCut = dmPSet.getParameter<double>("min");
+        double maxCut = dmPSet.getParameter<double>("max");
+        // Add our dm-specific cut to the map
+        decayModeCuts_[std::make_pair(nCharged, nPiZero)] =
+            std::make_pair(minCut, maxCut);
       }
     }
     ~PFRecoTauDiscriminationByInvMass() override{}

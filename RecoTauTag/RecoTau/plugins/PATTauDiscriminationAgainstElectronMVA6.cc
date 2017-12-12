@@ -34,8 +34,7 @@ class PATTauDiscriminationAgainstElectronMVA6 : public PATTauDiscriminationProdu
     usePhiAtEcalEntranceExtrapolation_ = cfg.getParameter<bool>("usePhiAtEcalEntranceExtrapolation");
     srcElectrons = cfg.getParameter<edm::InputTag>("srcElectrons");
     electronToken = consumes<pat::ElectronCollection>(srcElectrons);
-    verbosity_ = ( cfg.exists("verbosity") ) ?
-      cfg.getParameter<int>("verbosity") : 0;
+    verbosity_ = cfg.getParameter<int>("verbosity");
 
     // add category index
     produces<PATTauDiscriminator>("category");
