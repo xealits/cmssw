@@ -147,10 +147,8 @@ PATTauDiscriminantCutMultiplexer::PATTauDiscriminantCutMultiplexer(const edm::Pa
   key_ = cfg.getParameter<edm::InputTag>("key");
   key_token = consumes<pat::PATTauDiscriminator>(key_);
 
-  verbosity_ = ( cfg.exists("verbosity") ) ?
-    cfg.getParameter<int>("verbosity") : 0;
-
-  loadMVAfromDB_ = cfg.exists("loadMVAfromDB") ? cfg.getParameter<bool>("loadMVAfromDB") : false;
+  verbosity_ = cfg.getParameter<int>("verbosity");
+  loadMVAfromDB_ = cfg.getParameter<bool>("loadMVAfromDB");
   if ( !loadMVAfromDB_ ) {
     if(cfg.exists("inputFileName")){
       inputFileName_ = cfg.getParameter<edm::FileInPath>("inputFileName");
@@ -182,7 +180,11 @@ PATTauDiscriminantCutMultiplexer::PATTauDiscriminantCutMultiplexer(const edm::Pa
     }
     cuts_[category] = std::move(cut);
   }
+<<<<<<< HEAD
 
+=======
+  verbosity_ = cfg.getParameter<int>("verbosity");
+>>>>>>> test2 passed
   if(verbosity_) std::cout << "constructed " << moduleLabel_ << std::endl;
 }
 

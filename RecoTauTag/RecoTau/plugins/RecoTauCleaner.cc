@@ -87,8 +87,7 @@ RecoTauCleanerImpl<Prod>::RecoTauCleanerImpl(const edm::ParameterSet& pset)
     const std::string& pluginType = cleanerPSet->getParameter<std::string>("plugin");
     // Build the plugin
     cleanerEntry->plugin_.reset(RecoTauCleanerPluginFactory::get()->create(pluginType, *cleanerPSet, consumesCollector()));
-    cleanerEntry->tolerance_ = ( cleanerPSet->exists("tolerance") ) ?
-    cleanerPSet->getParameter<double>("tolerance") : 0.;
+    cleanerEntry->tolerance_ = cleanerPSet->getParameter<double>("tolerance");
     cleaners_.emplace_back(cleanerEntry);
   }
 
@@ -101,8 +100,7 @@ RecoTauCleanerImpl<Prod>::RecoTauCleanerImpl(const edm::ParameterSet& pset)
   }
 
   // Enable/disable debug output
-  verbosity_ = ( pset.exists("verbosity") ) ?
-    pset.getParameter<int>("verbosity") : 0;
+  verbosity_ = pset.getParameter<int>("verbosity");
 
   // Build the predicate that ranks our taus.  
   produces<Prod>();

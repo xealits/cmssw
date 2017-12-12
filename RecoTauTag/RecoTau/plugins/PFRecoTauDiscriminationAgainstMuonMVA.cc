@@ -72,7 +72,7 @@ class PFRecoTauDiscriminationAgainstMuonMVA final : public PFTauDiscriminationPr
       mvaInput_(nullptr)
   {
     mvaName_ = cfg.getParameter<std::string>("mvaName");
-    loadMVAfromDB_ = cfg.exists("loadMVAfromDB") ? cfg.getParameter<bool>("loadMVAfromDB") : false;
+    loadMVAfromDB_ = cfg.getParameter<bool>("loadMVAfromDB");
     if ( !loadMVAfromDB_ ) {
       if(cfg.exists("inputFileName")){
 	inputFileName_ = cfg.getParameter<edm::FileInPath>("inputFileName");
@@ -84,8 +84,7 @@ class PFRecoTauDiscriminationAgainstMuonMVA final : public PFTauDiscriminationPr
     Muons_token=consumes<reco::MuonCollection>(srcMuons_);
     dRmuonMatch_ = cfg.getParameter<double>("dRmuonMatch");
 
-    verbosity_ = ( cfg.exists("verbosity") ) ?
-      cfg.getParameter<int>("verbosity") : 0;
+    verbosity_ = cfg.getParameter<int>("verbosity");
 
     produces<PFTauDiscriminator>("category");
   }
