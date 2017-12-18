@@ -89,11 +89,11 @@ pfRecoTauDiscriminationByIsolation = cms.EDProducer("PFRecoTauDiscriminationByIs
     UseAllPFCandsForWeights = cms.bool(False),
 
     # moved these from .cc ifExists structures
-    storeRawOccupancy                     = cms.bool(false),
-    storeRawSumPt                         = cms.bool(false),
-    storeRawPUsumPt                       = cms.bool(false),
-    storeRawFootprintCorrection           = cms.bool(false),
-    storeRawPhotonSumPt_outsideSignalCone = cms.bool(false),
+    storeRawOccupancy                     = cms.bool(False),
+    storeRawSumPt                         = cms.bool(False),
+    storeRawPUsumPt                       = cms.bool(False),
+    storeRawFootprintCorrection           = cms.bool(False),
+    storeRawPhotonSumPt_outsideSignalCone = cms.bool(False),
 
     verbosity = cms.int32(0),
 )
