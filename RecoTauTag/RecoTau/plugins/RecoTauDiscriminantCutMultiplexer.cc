@@ -181,8 +181,7 @@ RecoTauDiscriminantCutMultiplexer::RecoTauDiscriminantCutMultiplexer(const edm::
     cuts_[category] = std::move(cut);
   }
 
-  verbosity_ = ( cfg.exists("verbosity") ) ?
-    cfg.getParameter<int>("verbosity") : 0;
+  verbosity_ = cfg.getParameter<int>("verbosity");
   if(verbosity_) std::cout << "constructed " << moduleLabel_ << std::endl;
 }
 
