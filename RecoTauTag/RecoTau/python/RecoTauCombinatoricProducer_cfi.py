@@ -103,8 +103,7 @@ combinatoricModifierConfigs = [
     cms.PSet(
         pfTauEnergyAlgorithmPlugin,
         name = cms.string("tau_en_reconstruction"),
-        plugin = cms.string("PFRecoTauEnergyAlgorithmPlugin"),
-        verbosity = cms.int32(0)                                              
+        plugin = cms.string("PFRecoTauEnergyAlgorithmPlugin")
     )
 ]
 
