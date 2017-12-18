@@ -6,6 +6,8 @@ Plugins for ranking PFTau candidates
 
 '''
 
+tolerance_default = cms.double(0)
+
 matchingConeCut = cms.PSet(
     name = cms.string("MatchingCone"),
     plugin = cms.string("RecoTauStringCleanerPlugin"),
@@ -13,6 +15,7 @@ matchingConeCut = cms.PSet(
     selection = cms.string("deltaR(eta, phi, jetRef().eta, jetRef().phi) < 0.1"),
     selectionPassFunction = cms.string("0"),
     selectionFailValue = cms.double(1e3),
+    tolerance = tolerance_default,
 )
 
 # Prefer taus with charge == 1 (no three prongs with charge = 3)
@@ -38,6 +41,7 @@ charge = cms.PSet(
     # taus with charge != 1 are rejected
     passForCharge = cms.int32(1),
     selectionFailValue = cms.double(0),
+    tolerance = tolerance_default,
 )
 
 # Prefer taus with pt greater 15
@@ -74,7 +78,8 @@ pt = cms.PSet(
 
 chargedHadronMultiplicity = cms.PSet(
     name = cms.string("ChargedHadronMultiplicity"),
-    plugin = cms.string("RecoTauChargedHadronMultiplicityCleanerPlugin")
+    plugin = cms.string("RecoTauChargedHadronMultiplicityCleanerPlugin"),
+    tolerance = tolerance_default,
 )
 
 stripMultiplicity = cms.PSet(
@@ -83,7 +88,8 @@ stripMultiplicity = cms.PSet(
     # Require that cones were built by ensuring the a leadCand exits
     selection = cms.string("leadPFCand().isNonnull()"),
     selectionPassFunction = cms.string("-signalPiZeroCandidates().size()"),
-    selectionFailValue = cms.double(1e3)
+    selectionFailValue = cms.double(1e3),
+    tolerance = tolerance_default,
 )
 
 combinedIsolation = cms.PSet(
@@ -92,7 +98,8 @@ combinedIsolation = cms.PSet(
     # Require that cones were built by ensuring the a leadCand exits
     selection = cms.string("leadPFCand().isNonnull()"),
     selectionPassFunction = cms.string("isolationPFChargedHadrCandsPtSum() + isolationPFGammaCandsEtSum()"),
-    selectionFailValue = cms.double(1e3)
+    selectionFailValue = cms.double(1e3),
+    tolerance = tolerance_default,
 )
 
 chargeIsolation = cms.PSet(
@@ -120,5 +127,6 @@ ecalIsolation = cms.PSet(
 killSoftTwoProngTaus = cms.PSet(
     name = cms.string("killSoftTwoProngTaus"),
     plugin = cms.string("RecoTauSoftTwoProngTausCleanerPlugin"),
-    minTrackPt = cms.double(5.)
+    minTrackPt = cms.double(5.),
+    tolerance = tolerance_default,
 )

@@ -46,7 +46,8 @@ hltPFRecoTauDiscriminationByIsolation = pfRecoTauDiscriminationByIsolation.clone
     # correction is taken as the gamma Et threshold from the isolation quality
     # cuts.
     # Uncommenting the parameter below allows this threshold to be overridden.
-    deltaBetaPUTrackPtCutOverride = cms.double(0.5),
+    deltaBetaPUTrackPtCutOverride = cms.bool(True),
+    deltaBetaPUTrackPtCutOverride_val = cms.double(0.5),
 
     # Rho corrections
     applyRhoCorrection = cms.bool(False),
