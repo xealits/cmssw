@@ -29,5 +29,6 @@ RecoTauCleaner = cms.EDProducer("RecoTauCleaner",
         # Take most isolated tau
         cleaners.combinedIsolation,
     ),
+    outputSelection = cms.string(""), # empty string is special value for doing nothing in the plugin
     verbosity = cms.int32(0)
 )
