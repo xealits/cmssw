@@ -376,7 +376,7 @@ void PATTauProducer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup
         const reco::PFCandidatePtr& icand = *it;
         ecalEnergy += icand->ecalEnergy();
         hcalEnergy += icand->hcalEnergy();
-	sumPhiTimesEnergy += icand->positionAtECALEntrance().phi()*icand->energy();			
+	sumPhiTimesEnergy += icand->positionAtECALEntrance().phi()*icand->energy();		
 	sumEtaTimesEnergy += icand->positionAtECALEntrance().eta()*icand->energy();
         sumEnergy += icand->energy();	 
 	const reco::Track* track = 0;

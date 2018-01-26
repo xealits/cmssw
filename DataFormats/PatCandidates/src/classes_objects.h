@@ -193,5 +193,5 @@ namespace DataFormats_PatCandidates {
   std::vector<std::pair<pat::TauRef, float> >                pattdiscr_v; 
   edm::RefProd<std::vector<pat::Tau> > patt_rp;    
   };
-
+  
 }

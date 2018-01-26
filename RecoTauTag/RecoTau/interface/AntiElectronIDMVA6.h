@@ -121,7 +121,7 @@ class AntiElectronIDMVA6
                    Float_t ElecMvaInDeltaEta
                   );
 
-   // this function can be called for all categories
+   // CV: this function can be called for all categories
    double MVAValue(const reco::PFTau& thePFTau, 
 		   const reco::GsfElectron& theGsfEle, bool usePhiAtEcalEntranceExtrapolation);
    // this function can be called for category 1 only !!

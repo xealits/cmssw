@@ -181,7 +181,9 @@ double AntiElectronIDMVA6::MVAValue(Float_t TauPt,
                                     Float_t ElecMvaInDeltaEta)
 { 
   double sumPt  = 0.;
+  double dEta   = 0.;
   double dEta2  = 0.;
+  double dPhi   = 0.;
   double dPhi2  = 0.;
   double sumPt2 = 0.;
   for ( unsigned int i = 0 ; i < GammasPtInSigCone.size() ; ++i ) {
@@ -192,22 +194,31 @@ double AntiElectronIDMVA6::MVAValue(Float_t TauPt,
     double eta_i = GammasdEtaInSigCone[i];
     sumPt  +=  pt_i;
     sumPt2 += (pt_i*pt_i);
+    dEta   += (pt_i*eta_i);
     dEta2  += (pt_i*eta_i*eta_i);
+    dPhi   += (pt_i*phi_i);
     dPhi2  += (pt_i*phi_i*phi_i);
   }
+
   Float_t TauGammaEnFracIn = -99.;
   if ( TauPt > 0. ) {
     TauGammaEnFracIn = sumPt/TauPt;
   }
+
   if ( sumPt > 0. ) {
+    dEta  /= sumPt;
+    dPhi  /= sumPt;
     dEta2 /= sumPt;
     dPhi2 /= sumPt;
   }
+
   Float_t TauGammaEtaMomIn = std::sqrt(dEta2)*std::sqrt(TauGammaEnFracIn)*TauPt;
   Float_t TauGammaPhiMomIn = std::sqrt(dPhi2)*std::sqrt(TauGammaEnFracIn)*TauPt;
 
   sumPt  = 0.;
+  dEta   = 0.;
   dEta2  = 0.;
+  dPhi   = 0.;
   dPhi2  = 0.;
   sumPt2 = 0.;
   for ( unsigned int i = 0 ; i < GammasPtOutSigCone.size() ; ++i ) {
@@ -218,14 +229,21 @@ double AntiElectronIDMVA6::MVAValue(Float_t TauPt,
     double eta_i = GammasdEtaOutSigCone[i];
     sumPt  +=  pt_i;
     sumPt2 += (pt_i*pt_i);
+    dEta   += (pt_i*eta_i);
     dEta2  += (pt_i*eta_i*eta_i);
+    dPhi   += (pt_i*phi_i);
     dPhi2  += (pt_i*phi_i*phi_i);
   }
+    
   Float_t TauGammaEnFracOut = sumPt/TauPt;
-  if ( sumPt > 0. ) {
+
+    if ( sumPt > 0. ) {
+    dEta  /= sumPt;
+    dPhi  /= sumPt;
     dEta2 /= sumPt;
     dPhi2 /= sumPt;
   }
+
   Float_t TauGammaEtaMomOut = std::sqrt(dEta2)*std::sqrt(TauGammaEnFracOut)*TauPt;
   Float_t TauGammaPhiMomOut = std::sqrt(dPhi2)*std::sqrt(TauGammaEnFracOut)*TauPt;
   
@@ -1239,6 +1257,7 @@ double AntiElectronIDMVA6::minimum(double a, double b)
   if ( std::abs(b) < std::abs(a) ) return b;
   else return a;
 }
+
 
 namespace {
 
