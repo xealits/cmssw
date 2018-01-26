@@ -23,6 +23,11 @@ patTauDiscriminantCutMultiplexer = cms.EDProducer(
         ),
     key = cms.InputTag("fixme"), # a discriminator
     loadMVAfromDB = cms.bool(True),
+    inputFileName = cms.FileInPath(""), # the filename for MVA if it is not loaded from DB
+    mvaOutput_normalization = cms.string(""), # the special value for not using a string parameter is empty string ""
+    # it's the same value as the atribute of this plugin class is initialized with anyway
+    # and throughout configs this parameter is everywhere set to non-empty value
+
     mapping = cms.VPSet(
         cms.PSet(
             category = cms.uint32(0),

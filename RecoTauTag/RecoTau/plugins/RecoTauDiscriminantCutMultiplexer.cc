@@ -149,14 +149,10 @@ RecoTauDiscriminantCutMultiplexer::RecoTauDiscriminantCutMultiplexer(const edm::
 
   loadMVAfromDB_ = cfg.getParameter<bool>("loadMVAfromDB");
   if ( !loadMVAfromDB_ ) {
-    if(cfg.exists("inputFileName")){
       inputFileName_ = cfg.getParameter<edm::FileInPath>("inputFileName");
-    }else throw cms::Exception("MVA input not defined") << "Requested to load tau MVA input from ROOT file but no file provided in cfg file";
   }
   if(verbosity_)  std::cout << moduleLabel_ << " loadMVA = " << loadMVAfromDB_ << std::endl;
-  if ( cfg.exists("mvaOutput_normalization") ) {
-    mvaOutputNormalizationName_ = cfg.getParameter<std::string>("mvaOutput_normalization"); 
-  }
+  mvaOutputNormalizationName_ = cfg.getParameter<std::string>("mvaOutput_normalization"); 
 
   // Setup our cut map
   typedef std::vector<edm::ParameterSet> VPSet;
