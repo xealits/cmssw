@@ -31,12 +31,19 @@ class RecoTauDiscriminantFromDiscriminator : public RecoTauDiscriminantPlugin{
 
 RecoTauDiscriminantFromDiscriminator::RecoTauDiscriminantFromDiscriminator(
     const edm::ParameterSet& pset):RecoTauDiscriminantPlugin(pset) {
-  takeAbs_ = pset.existsAs<bool>("takeAbs") ? 
-    pset.getParameter<bool>("takeAbs") : false;
-  min_ = pset.existsAs<double>("minValue") ? 
-    pset.getParameter<double>("minValue") : -1*std::numeric_limits<double>::max();
-  max_ = pset.existsAs<double>("maxValue") ? 
-    pset.getParameter<double>("maxValue") : std::numeric_limits<double>::max();
+
+  //takeAbs_ = pset.existsAs<bool>("takeAbs") ? 
+  //  pset.getParameter<bool>("takeAbs") : false;
+  //min_ = pset.existsAs<double>("minValue") ? 
+  //  pset.getParameter<double>("minValue") : -1*std::numeric_limits<double>::max();
+  //max_ = pset.existsAs<double>("maxValue") ? 
+  //  pset.getParameter<double>("maxValue") : std::numeric_limits<double>::max();
+  // these 3 existsAs don't have an option
+  // seems like no point to use As<double>
+  // probably in the pas there was some option
+  takeAbs_ = pset.getParameter<bool>("takeAbs");
+  min_ = pset.getParameter<double>("minValue");
+  max_ = pset.getParameter<double>("maxValue");
 
   if (pset.existsAs<edm::InputTag>("discSrc")) {
     discriminators_.push_back(std::make_pair(

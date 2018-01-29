@@ -7,6 +7,7 @@ discriminantConfiguration = cms.PSet(
         discSrc = cms.InputTag('hpsTancTausDiscriminationByFlightPath'),
         minValue = cms.double(-25),
         maxValue = cms.double(25),
+        takeAbs = cms.bool(False),
     ),
 
     InvariantOpeningAngle = cms.PSet(
