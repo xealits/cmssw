@@ -56,9 +56,7 @@ template<class TauType, class TauDiscriminator>
 TauDiscriminationAgainstMuon<TauType, TauDiscriminator>::TauDiscriminationAgainstMuon(const edm::ParameterSet& cfg)
   : TauDiscriminationProducerBase<TauType, TauDiscriminator>(cfg) 
 {
-  //if ( cfg.exists("muonSource") ) muonSource_ = cfg.getParameter<edm::InputTag>("muonSource");
   muonSource_ = cfg.getParameter<edm::InputTag>("muonSource");
-  //dRmatch_ = ( cfg.exists("dRmatch") ) ? cfg.getParameter<double>("dRmatch") : 0.5;
   dRmatch_ = cfg.getParameter<double>("dRmatch");
 
   std::string discriminatorOption_string = cfg.getParameter<std::string>("discriminatorOption");  

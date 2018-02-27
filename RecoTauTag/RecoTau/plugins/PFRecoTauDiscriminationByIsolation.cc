@@ -132,11 +132,12 @@ class PFRecoTauDiscriminationByIsolation : public PFTauDiscriminationProducerBas
       // Determine the pt threshold for the PU tracks
       // First check if the user specifies explicitly the cut.
       // For that the user has to provide a >= 0  value for the PtCutOverride.
-      double deltaBetaPUTrackPtCutOverride = pset.getParameter<double>("deltaBetaPUTrackPtCutOverride");
-      if ( deltaBetaPUTrackPtCutOverride >= 0. ) {
+      bool deltaBetaPUTrackPtCutOverride = pset.getParameter<bool>("deltaBetaPUTrackPtCutOverride");
+      if ( deltaBetaPUTrackPtCutOverride ) {
+	double deltaBetaPUTrackPtCutOverride_val = pset.getParameter<double>("deltaBetaPUTrackPtCutOverride_val");
 	puFactorizedIsoQCuts.second.addParameter<double>(
 	  "minTrackPt",
-	  deltaBetaPUTrackPtCutOverride);
+	  deltaBetaPUTrackPtCutOverride_val);
       } else {
 	// Secondly take it from the minGammaEt
 	puFactorizedIsoQCuts.second.addParameter<double>(
