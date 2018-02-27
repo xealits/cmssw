@@ -51,9 +51,8 @@ pfRecoTauDiscriminationByIsolation = cms.EDProducer("PFRecoTauDiscriminationByIs
     # By default, the pt threshold for tracks used to compute the DeltaBeta
     # correction is taken as the gamma Et threshold from the isolation quality
     # cuts.
-    # If the parameter below is set to >= 0 it overrides this threshold.
-    # The assumption is that PtCut must be >= 0.
-    deltaBetaPUTrackPtCutOverride = cms.double(-1.5), # cms.double(1.5) would override the threshold
+    deltaBetaPUTrackPtCutOverride     = cms.bool(False),  # Set the boolean = True to override.
+    deltaBetaPUTrackPtCutOverride_val = cms.double(-1.5), # Set the value for new value.
 
     # Tau footprint correction
     applyFootprintCorrection = cms.bool(False),

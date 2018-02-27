@@ -92,13 +92,10 @@ RecoTauCleanerImpl<Prod>::RecoTauCleanerImpl(const edm::ParameterSet& pset)
   }
 
   // Check if we want to apply a final output selection
-  //if ( pset.exists("outputSelection") ) {
   std::string selection = pset.getParameter<std::string>("outputSelection");
   if ( selection != "" ) {
     outputSelector_.reset(new StringCutObjectSelector<reco::PFTau>(selection));
   }
-  //} // so here if the outputSelection is empty or does not exist nothing is done
-  // empty and non-existent parameter have the same effect -- I set default empty string
 
   // Enable/disable debug output
   verbosity_ = pset.getParameter<int>("verbosity");
