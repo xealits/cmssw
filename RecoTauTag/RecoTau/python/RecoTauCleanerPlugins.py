@@ -29,6 +29,7 @@ unitCharge = cms.PSet(
     # If it is a one prong, consider it just as good as a
     # three prong with unit charge
     selectionFailValue = cms.double(0),
+    tolerance = tolerance_default,
 )
 
 # similar to unitCharge but handles also cases where tau is made up of
@@ -50,7 +51,8 @@ ptGt15 = cms.PSet(
     plugin = cms.string("RecoTauStringCleanerPlugin"),
     selection = cms.string("pt > 15."),
     selectionPassFunction = cms.string("0"),
-    selectionFailValue = cms.double(1e3)
+    selectionFailValue = cms.double(1e3),
+    tolerance = tolerance_default,
 )
 
 # Prefer taus that have higher TaNC output values
@@ -58,12 +60,14 @@ tanc = cms.PSet(
     name = cms.string("TaNC"),
     plugin = cms.string("RecoTauDiscriminantCleanerPlugin"),
     src = cms.InputTag("DISCRIMINATOR_SRC"),
+    tolerance = tolerance_default,
 )
 
 leadPionFinding = cms.PSet(
     name = cms.string("LeadPion"),
     plugin = cms.string("RecoTauDiscriminantCleanerPlugin"),
     src = cms.InputTag("DISCRIMINATOR_SRC"),
+    tolerance = tolerance_default,
 )
 
 pt = cms.PSet(
@@ -109,7 +113,8 @@ chargeIsolation = cms.PSet(
     selection = cms.string("leadPFCand().isNonnull()"),
     # Prefer lower isolation activity
     selectionPassFunction = cms.string("isolationPFChargedHadrCandsPtSum()"),
-    selectionFailValue = cms.double(1e3)
+    selectionFailValue = cms.double(1e3),
+    tolerance = tolerance_default,
 )
 
 ecalIsolation = cms.PSet(
@@ -119,7 +124,8 @@ ecalIsolation = cms.PSet(
     selection = cms.string("leadPFCand().isNonnull()"),
     # Prefer lower isolation activity
     selectionPassFunction = cms.string("isolationPFGammaCandsEtSum()"),
-    selectionFailValue = cms.double(1e3)
+    selectionFailValue = cms.double(1e3),
+    tolerance = tolerance_default,
 )
 
 # CV: Reject 2-prong candidates in which one of the tracks has low pT,
