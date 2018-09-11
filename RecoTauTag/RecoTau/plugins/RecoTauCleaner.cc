@@ -93,7 +93,7 @@ RecoTauCleanerImpl<Prod>::RecoTauCleanerImpl(const edm::ParameterSet& pset)
 
   // Check if we want to apply a final output selection
   std::string selection = pset.getParameter<std::string>("outputSelection");
-  if ( selection != "" ) {
+  if ( !selection.empty() ) {
     outputSelector_.reset(new StringCutObjectSelector<reco::PFTau>(selection));
   }
 

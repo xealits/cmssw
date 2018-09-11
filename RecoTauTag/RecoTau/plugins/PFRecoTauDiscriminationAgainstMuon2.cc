@@ -94,7 +94,7 @@ class PFRecoTauDiscriminationAgainstMuon2 final : public PFTauDiscriminationProd
 
 void PFRecoTauDiscriminationAgainstMuon2::beginEvent(const edm::Event& evt, const edm::EventSetup& es) 
 {
-  if ( srcMuons_.label() != "" ) {
+  if ( !srcMuons_.label().empty() ) {
     evt.getByToken(Muons_token, muons_);
   }
 }
@@ -182,7 +182,7 @@ double PFRecoTauDiscriminationAgainstMuon2::discriminate(const reco::PFTauRef& p
     }
   }
   
-  if ( srcMuons_.label() != "" ) {
+  if ( !srcMuons_.label().empty() ) {
     size_t numMuons = muons_->size();
     for ( size_t idxMuon = 0; idxMuon < numMuons; ++idxMuon ) {
       reco::MuonRef muon(muons_, idxMuon);
