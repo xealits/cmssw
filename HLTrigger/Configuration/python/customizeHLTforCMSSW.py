@@ -48,10 +48,18 @@ def customiseFor2017DtUnpacking(process):
     return process
 
 
+# RecoTauJetRegionProducer requires new parameter "varbosity"
+def customiseFor24501(process):
+    for producer in producers_by_type(process, "RecoTauJetRegionProducer"):
+        producer.verbosity = cms.int32(0)
+    return process
+
+
 # CMSSW version specific customizations
 def customizeHLTforCMSSW(process, menuType="GRun"):
 
     # add call to action function in proper order: newest last!
     # process = customiseFor12718(process)
+    process = customiseFor24501(process)
 
     return process
