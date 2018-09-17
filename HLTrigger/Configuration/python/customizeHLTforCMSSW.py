@@ -88,7 +88,7 @@ def customiseFor24501(process):
          if not hasattr(producer,"storeRawFootprintCorrection"):
              producer.storeRawFootprintCorrection = cms.bool(False)
          if not hasattr(producer,"storeRawPhotonSumPt_outsideSignalCone"):
-             producer.storeRawPhotonSumPt_outsideSignalCone = cms.bool(False)def customiseFor24501(process):
+             producer.storeRawPhotonSumPt_outsideSignalCone = cms.bool(False)
     return process
 
 
