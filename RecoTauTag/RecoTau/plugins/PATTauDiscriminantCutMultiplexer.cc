@@ -23,6 +23,9 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "CondFormats/PhysicsToolsObjects/interface/PhysicsTGraphPayload.h"
 #include "CondFormats/DataRecord/interface/PhysicsTGraphPayloadRcd.h"
 #include "CondFormats/PhysicsToolsObjects/interface/PhysicsTFormulaPayload.h"
@@ -41,7 +44,8 @@ class PATTauDiscriminantCutMultiplexer : public PATTauDiscriminationProducerBase
     ~PATTauDiscriminantCutMultiplexer() override;
     double discriminate(const pat::TauRef&) const override;
     void beginEvent(const edm::Event& event, const edm::EventSetup& eventSetup) override;
-	
+
+    static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
   private:
     std::string moduleLabel_;
 	
@@ -273,6 +277,51 @@ PATTauDiscriminantCutMultiplexer::discriminate(const pat::TauRef& tau) const
   } else assert(0);
 
   return passesCuts;
+}
+
+void
+PATTauDiscriminantCutMultiplexer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // patTauDiscriminantCutMultiplexer
+  edm::ParameterSetDescription desc;
+  desc.add<edm::InputTag>("toMultiplex", edm::InputTag("fixme"));
+  desc.add<int>("verbosity", 0);
+  {
+    edm::ParameterSetDescription vpsd1;
+    vpsd1.add<unsigned int>("category", 0);
+    vpsd1.add<double>("cut", 0.5);
+    std::vector<edm::ParameterSet> temp1;
+    temp1.reserve(2);
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<unsigned int>("category", 0);
+      temp2.addParameter<double>("cut", 0.5);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<unsigned int>("category", 1);
+      temp2.addParameter<double>("cut", 0.2);
+      temp1.push_back(temp2);
+    }
+    desc.addVPSet("mapping", vpsd1, temp1);
+  }
+  desc.add<edm::FileInPath>("inputFileName", edm::FileInPath("RecoTauTag/RecoTau/test/dummyMVAinputFile"));
+  desc.add<bool>("loadMVAfromDB", true);
+  {
+    edm::ParameterSetDescription psd0;
+    psd0.add<std::string>("BooleanOperator", "and");
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("cut", 0.0);
+      psd1.add<edm::InputTag>("Producer", edm::InputTag("fixme"));
+      psd0.add<edm::ParameterSetDescription>("decayMode", psd1);
+    }
+    desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
+  }
+  desc.add<std::string>("mvaOutput_normalization", "");
+  desc.add<edm::InputTag>("key", edm::InputTag("fixme"));
+  desc.add<edm::InputTag>("PATTauProducer", edm::InputTag("fixme"));
+  descriptions.add("patTauDiscriminantCutMultiplexer", desc);
 }
 
 DEFINE_FWK_MODULE(PATTauDiscriminantCutMultiplexer);

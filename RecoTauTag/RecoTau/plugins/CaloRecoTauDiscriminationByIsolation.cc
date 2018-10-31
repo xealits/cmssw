@@ -45,3 +45,4 @@ double CaloRecoTauDiscriminationByIsolation::discriminate(const CaloTauRef& calo
 }
 
 DEFINE_FWK_MODULE(CaloRecoTauDiscriminationByIsolation);
+

@@ -1,5 +1,7 @@
 #include "RecoTauTag/RecoTau/interface/TauDiscriminationProducerBase.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
 #include "RecoTauTag/RecoTau/interface/RecoTauQualityCuts.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauVertexAssociator.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -23,6 +25,7 @@ class PFRecoTauDiscriminationByNProngs : public PFTauDiscriminationProducerBase 
 	void beginEvent(const edm::Event&, const edm::EventSetup&) override;
 	double discriminate(const reco::PFTauRef&) const override;
 
+        static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
     private:
 	std::unique_ptr<tau::RecoTauQualityCuts> qcuts_;
 	std::unique_ptr<tau::RecoTauVertexAssociator> vertexAssociator_;
@@ -73,6 +76,67 @@ double PFRecoTauDiscriminationByNProngs::discriminate(const PFTauRef& tau) const
 	if(!accepted) np = 0;
 	if(booleanOutput) return accepted;
 	return np;
+}
+
+void
+PFRecoTauDiscriminationByNProngs::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // pfRecoTauDiscriminationByNProngs
+  edm::ParameterSetDescription desc;
+  desc.add<unsigned int>("MinN", 1);
+  desc.add<bool>("BooleanOutput", true);
+  desc.add<edm::InputTag>("PFTauProducer", edm::InputTag("combinatoricRecoTaus"));
+  {
+    edm::ParameterSetDescription psd0;
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("maxDeltaZ", 0.4);
+      psd1.add<double>("minTrackPt", 0.5);
+      psd1.add<double>("minTrackVertexWeight", -1.0);
+      psd1.add<double>("maxTrackChi2", 100.0);
+      psd1.add<unsigned int>("minTrackPixelHits", 0);
+      psd1.add<double>("minGammaEt", 1.0);
+      psd1.add<unsigned int>("minTrackHits", 3);
+      psd1.add<double>("minNeutralHadronEt", 30.0);
+      psd1.add<double>("maxTransverseImpactParameter", 0.1);
+      psd0.add<edm::ParameterSetDescription>("signalQualityCuts", psd1);
+    }
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("minTrackPt", 0.5);
+      psd1.add<double>("minTrackVertexWeight", -1.0);
+      psd1.add<double>("maxTrackChi2", 100.0);
+      psd1.add<unsigned int>("minTrackPixelHits", 0);
+      psd1.add<double>("minGammaEt", 1.0);
+      psd1.add<unsigned int>("minTrackHits", 3);
+      psd1.add<double>("maxTransverseImpactParameter", 0.1);
+      psd0.add<edm::ParameterSetDescription>("vxAssocQualityCuts", psd1);
+    }
+    psd0.add<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("maxDeltaZ", 0.2);
+      psd1.add<double>("minTrackPt", 1.0);
+      psd1.add<double>("minTrackVertexWeight", -1.0);
+      psd1.add<double>("maxTrackChi2", 100.0);
+      psd1.add<unsigned int>("minTrackPixelHits", 0);
+      psd1.add<double>("minGammaEt", 1.5);
+      psd1.add<unsigned int>("minTrackHits", 8);
+      psd1.add<double>("maxTransverseImpactParameter", 0.03);
+      psd0.add<edm::ParameterSetDescription>("isolationQualityCuts", psd1);
+    }
+    psd0.add<std::string>("pvFindingAlgo", "closestInDeltaZ");
+    psd0.add<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+    psd0.add<bool>("vertexTrackFiltering", false);
+    psd0.add<bool>("recoverLeadingTrk", false);
+    desc.add<edm::ParameterSetDescription>("qualityCuts", psd0);
+  }
+  {
+    edm::ParameterSetDescription psd0;
+    psd0.add<std::string>("BooleanOperator", "and");
+    desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
+  }
+  desc.add<unsigned int>("MaxN", 0);
+  descriptions.add("pfRecoTauDiscriminationByNProngs", desc);
 }
 
 DEFINE_FWK_MODULE(PFRecoTauDiscriminationByNProngs);

@@ -19,6 +19,9 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
@@ -72,6 +75,8 @@ class PFTauPrimaryVertexProducer final : public edm::stream::EDProducer<> {
   explicit PFTauPrimaryVertexProducer(const edm::ParameterSet& iConfig);
   ~PFTauPrimaryVertexProducer() override;
   void produce(edm::Event&,const edm::EventSetup&) override;
+
+  static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
  private:
   edm::InputTag PFTauTag_;
@@ -269,5 +274,81 @@ void PFTauPrimaryVertexProducer::produce(edm::Event& iEvent,const edm::EventSetu
   iEvent.put(std::move(VertexCollection_out),"PFTauPrimaryVertices");
   iEvent.put(std::move(AVPFTauPV));
 }
-  
+
+void
+PFTauPrimaryVertexProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // PFTauPrimaryVertexProducer
+  edm::ParameterSetDescription desc;
+  {
+    edm::ParameterSetDescription vpsd1;
+    vpsd1.add<edm::InputTag>("discriminator", edm::InputTag("hpsPFTauDiscriminationByDecayModeFinding"));
+    vpsd1.add<double>("selectionCut", 0.5);
+    std::vector<edm::ParameterSet> temp1;
+    temp1.reserve(1);
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<edm::InputTag>("discriminator", edm::InputTag("hpsPFTauDiscriminationByDecayModeFinding"));
+      temp2.addParameter<double>("selectionCut", 0.5);
+      temp1.push_back(temp2);
+    }
+    desc.addVPSet("discriminators", vpsd1, temp1);
+  }
+  desc.add<bool>("RemoveElectronTracks", false);
+  desc.add<std::string>("cut", "pt > 18.0 & abs(eta)<2.3");
+  desc.add<edm::InputTag>("beamSpot", edm::InputTag("offlineBeamSpot"));
+  desc.add<int>("Algorithm", 0);
+  desc.add<edm::InputTag>("ElectronTag", edm::InputTag("MyElectrons"));
+  desc.add<edm::InputTag>("PFTauTag", edm::InputTag("hpsPFTauProducer"));
+  {
+    edm::ParameterSetDescription psd0;
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("maxDeltaZ", 0.4);
+      psd1.add<double>("minTrackPt", 0.5);
+      psd1.add<double>("minTrackVertexWeight", -1.0);
+      psd1.add<double>("maxTrackChi2", 100.0);
+      psd1.add<unsigned int>("minTrackPixelHits", 0);
+      psd1.add<double>("minGammaEt", 1.0);
+      psd1.add<unsigned int>("minTrackHits", 3);
+      psd1.add<double>("minNeutralHadronEt", 30.0);
+      psd1.add<double>("maxTransverseImpactParameter", 0.1);
+      psd0.add<edm::ParameterSetDescription>("signalQualityCuts", psd1);
+    }
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("minTrackPt", 0.5);
+      psd1.add<double>("minTrackVertexWeight", -1.0);
+      psd1.add<double>("maxTrackChi2", 100.0);
+      psd1.add<unsigned int>("minTrackPixelHits", 0);
+      psd1.add<double>("minGammaEt", 1.0);
+      psd1.add<unsigned int>("minTrackHits", 3);
+      psd1.add<double>("maxTransverseImpactParameter", 0.1);
+      psd0.add<edm::ParameterSetDescription>("vxAssocQualityCuts", psd1);
+    }
+    psd0.add<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+    {
+      edm::ParameterSetDescription psd1;
+      psd1.add<double>("maxDeltaZ", 0.2);
+      psd1.add<double>("minTrackPt", 1.0);
+      psd1.add<double>("minTrackVertexWeight", -1.0);
+      psd1.add<double>("maxTrackChi2", 100.0);
+      psd1.add<unsigned int>("minTrackPixelHits", 0);
+      psd1.add<double>("minGammaEt", 1.5);
+      psd1.add<unsigned int>("minTrackHits", 8);
+      psd1.add<double>("maxTransverseImpactParameter", 0.03);
+      psd0.add<edm::ParameterSetDescription>("isolationQualityCuts", psd1);
+    }
+    psd0.add<std::string>("pvFindingAlgo", "closestInDeltaZ");
+    psd0.add<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+    psd0.add<bool>("vertexTrackFiltering", false);
+    psd0.add<bool>("recoverLeadingTrk", false);
+    desc.add<edm::ParameterSetDescription>("qualityCuts", psd0);
+  }
+  desc.add<edm::InputTag>("MuonTag", edm::InputTag("MyMuons"));
+  desc.add<bool>("RemoveMuonTracks", false);
+  desc.add<bool>("useBeamSpot", true);
+  desc.add<bool>("useSelectedTaus", false);
+  desc.add<edm::InputTag>("PVTag", edm::InputTag("offlinePrimaryVertices"));
+  descriptions.add("PFTauPrimaryVertexProducer", desc);
+}
 DEFINE_FWK_MODULE(PFTauPrimaryVertexProducer);
