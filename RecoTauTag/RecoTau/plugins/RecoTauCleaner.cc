@@ -24,6 +24,9 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "RecoTauTag/RecoTau/interface/RecoTauBuilderPlugins.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauCleaningTools.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauCommonUtilities.h"
@@ -61,6 +64,8 @@ class RecoTauCleanerImpl : public edm::stream::EDProducer<>
   explicit RecoTauCleanerImpl(const edm::ParameterSet& pset);
   ~RecoTauCleanerImpl() override;
   void produce(edm::Event& evt, const edm::EventSetup& es) override;
+
+  static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
  private:
   edm::InputTag tauSrc_;
@@ -293,6 +298,105 @@ void RecoTauCleanerImpl<Prod>::produce(edm::Event& evt, const edm::EventSetup& e
 
 typedef RecoTauCleanerImpl<reco::PFTauCollection> RecoTauCleaner;
 typedef RecoTauCleanerImpl<reco::PFTauRefVector> RecoTauRefCleaner;
+
+template <>
+void
+//RecoTauCleaner::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+RecoTauCleanerImpl<reco::PFTauCollection>::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // RecoTauCleaner
+  edm::ParameterSetDescription desc;
+  desc.add<std::string>("outputSelection", "");
+  {
+    edm::ParameterSetDescription vpsd1;
+    vpsd1.add<int>("passForCharge", 1);
+    vpsd1.add<double>("selectionFailValue", 0);
+    vpsd1.add<std::string>("plugin", "RecoTauChargeCleanerPlugin");
+    vpsd1.add<std::vector<unsigned int>>("nprongs", {
+      1,
+      3,
+    });
+    vpsd1.add<double>("tolerance", 0);
+    vpsd1.add<std::string>("name", "Charge");
+    std::vector<edm::ParameterSet> temp1;
+    temp1.reserve(7);
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<int>("passForCharge", 1);
+      temp2.addParameter<double>("selectionFailValue", 0);
+      temp2.addParameter<std::string>("plugin", "RecoTauChargeCleanerPlugin");
+      temp2.addParameter<std::vector<unsigned int>>("nprongs", {
+        1,
+        3,
+      });
+      temp2.addParameter<double>("tolerance", 0);
+      temp2.addParameter<std::string>("name", "Charge");
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<edm::InputTag>("src", edm::InputTag("hpsSelectionDiscriminator"));
+      temp2.addParameter<double>("tolerance", 0);
+      temp2.addParameter<std::string>("name", "HPS_Select");
+      temp2.addParameter<std::string>("plugin", "RecoTauDiscriminantCleanerPlugin");
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minTrackPt", 5.0);
+      temp2.addParameter<double>("tolerance", 0);
+      temp2.addParameter<std::string>("name", "killSoftTwoProngTaus");
+      temp2.addParameter<std::string>("plugin", "RecoTauSoftTwoProngTausCleanerPlugin");
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("tolerance", 0);
+      temp2.addParameter<std::string>("name", "ChargedHadronMultiplicity");
+      temp2.addParameter<std::string>("plugin", "RecoTauChargedHadronMultiplicityCleanerPlugin");
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("selectionPassFunction", "-pt()");
+      temp2.addParameter<std::string>("selection", "leadPFCand().isNonnull()");
+      temp2.addParameter<std::string>("name", "Pt");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<std::string>("plugin", "RecoTauStringCleanerPlugin");
+      temp2.addParameter<double>("tolerance", 0.01);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("selectionPassFunction", "-signalPiZeroCandidates().size()");
+      temp2.addParameter<std::string>("selection", "leadPFCand().isNonnull()");
+      temp2.addParameter<std::string>("name", "StripMultiplicity");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<std::string>("plugin", "RecoTauStringCleanerPlugin");
+      temp2.addParameter<double>("tolerance", 0);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("selectionPassFunction", "isolationPFChargedHadrCandsPtSum() + isolationPFGammaCandsEtSum()");
+      temp2.addParameter<std::string>("selection", "leadPFCand().isNonnull()");
+      temp2.addParameter<std::string>("name", "CombinedIsolation");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<std::string>("plugin", "RecoTauStringCleanerPlugin");
+      temp2.addParameter<double>("tolerance", 0);
+      temp1.push_back(temp2);
+    }
+    desc.addVPSet("cleaners", vpsd1, temp1);
+  }
+  desc.add<int>("verbosity", 0);
+  desc.add<edm::InputTag>("src", edm::InputTag("combinatoricRecoTaus"));
+  descriptions.add("RecoTauCleaner", desc);
+}
+
+template <>
+void
+RecoTauCleanerImpl<reco::PFTauRefVector>::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+// there was no cfi file for this plugin
+}
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 
