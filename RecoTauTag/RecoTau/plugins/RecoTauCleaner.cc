@@ -317,6 +317,10 @@ RecoTauCleanerImpl<reco::PFTauCollection>::fillDescriptions(edm::ConfigurationDe
     });
     vpsd1.add<double>("tolerance", 0);
     vpsd1.add<std::string>("name", "Charge");
+    vpsd1.addOptional<edm::InputTag>("src");
+    vpsd1.addOptional<double>("minTrackPt");
+    vpsd1.addOptional<std::string>("selection");
+    vpsd1.addOptional<std::string>("selectionPassFunction");
     std::vector<edm::ParameterSet> temp1;
     temp1.reserve(7);
     {
