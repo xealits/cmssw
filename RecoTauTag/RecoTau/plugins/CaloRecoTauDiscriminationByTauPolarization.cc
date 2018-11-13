@@ -52,9 +52,9 @@ CaloRecoTauDiscriminationByTauPolarization::fillDescriptions(edm::ConfigurationD
     psd0.add<std::string>("BooleanOperator", "and");
     {
       edm::ParameterSetDescription psd1;
-      psd1.add<double>("cut", 0.5);
-      psd1.add<edm::InputTag>("Producer", edm::InputTag("pfRecoTauDiscriminationByLeadingTrackFinding"));
-      psd0.add<edm::ParameterSetDescription>("leadTrack", psd1);
+      psd1.add<double>("cut");
+      psd1.add<edm::InputTag>("Producer");
+      psd0.addOptional<edm::ParameterSetDescription>("leadTrack", psd1);
     }
     desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
   }
@@ -63,4 +63,5 @@ CaloRecoTauDiscriminationByTauPolarization::fillDescriptions(edm::ConfigurationD
   desc.add<bool>("BooleanOutput", true);
   descriptions.add("caloRecoTauDiscriminationByTauPolarization", desc);
 }
+
 DEFINE_FWK_MODULE(CaloRecoTauDiscriminationByTauPolarization);

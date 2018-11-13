@@ -327,10 +327,22 @@ PFRecoTauDiscriminationAgainstMuon2::fillDescriptions(edm::ConfigurationDescript
     psd0.add<std::string>("BooleanOperator", "and");
     {
       edm::ParameterSetDescription psd1;
-      psd1.add<double>("cut", 0.5);
-      psd1.add<edm::InputTag>("Producer", edm::InputTag("pfRecoTauDiscriminationByLeadingTrackFinding"));
-      psd0.add<edm::ParameterSetDescription>("leadTrack", psd1);
+      psd1.add<double>("cut"); //, 0.5);
+      psd1.add<edm::InputTag>("Producer"); //, edm::InputTag("pfRecoTauDiscriminationByLeadingTrackFinding"));
+      psd0.addOptional<edm::ParameterSetDescription>("leadTrack", psd1); // optional with default? 
     }
+    // Prediscriminants can be
+    // Prediscriminants = noPrediscriminants,
+    // as in RecoTauTag/Configuration/python/HPSPFTaus_cff.py
+    // 
+    // and the definition is:
+    // RecoTauTag/RecoTau/python/TauDiscriminatorTools.py
+    // # Require no prediscriminants
+    // noPrediscriminants = cms.PSet(
+    //       BooleanOperator = cms.string("and"),
+    //       )
+    // -- so this is the minimum required definition
+    // otherwise it inserts the leadTrack with Producer = InpuTag(...) and does not find the corresponding output during the run
     desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
   }
   desc.add<std::vector<int>>("maskHitsDT", {

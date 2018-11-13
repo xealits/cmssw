@@ -312,9 +312,9 @@ PATTauDiscriminantCutMultiplexer::fillDescriptions(edm::ConfigurationDescription
     psd0.add<std::string>("BooleanOperator", "and");
     {
       edm::ParameterSetDescription psd1;
-      psd1.add<double>("cut", 0.0);
-      psd1.add<edm::InputTag>("Producer", edm::InputTag("fixme"));
-      psd0.add<edm::ParameterSetDescription>("decayMode", psd1);
+      psd1.add<double>("cut");
+      psd1.add<edm::InputTag>("Producer");
+      psd0.addOptional<edm::ParameterSetDescription>("decayMode", psd1);
     }
     desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
   }

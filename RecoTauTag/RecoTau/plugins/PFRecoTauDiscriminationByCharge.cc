@@ -51,4 +51,5 @@ PFRecoTauDiscriminationByCharge::fillDescriptions(edm::ConfigurationDescriptions
   desc.add<edm::InputTag>("PFTauProducer", edm::InputTag("pfRecoTauProducerHighEfficiency"));
   descriptions.add("pfRecoTauDiscriminationByCharge", desc);
 }
+
 DEFINE_FWK_MODULE(PFRecoTauDiscriminationByCharge);

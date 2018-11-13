@@ -190,9 +190,9 @@ PFRecoTauDiscriminationAgainstElectronDeadECAL::fillDescriptions(edm::Configurat
     pset_Prediscriminants.add<std::string>("BooleanOperator", "and");
     {
       edm::ParameterSetDescription psd1;
-      psd1.add<double>("cut", 0.5);
-      psd1.add<edm::InputTag>("Producer", edm::InputTag("pfRecoTauDiscriminationByLeadingTrackFinding"));
-      pset_Prediscriminants.add<edm::ParameterSetDescription>("leadTrack", psd1);
+      psd1.add<double>("cut");
+      psd1.add<edm::InputTag>("Producer");
+      pset_Prediscriminants.addOptional<edm::ParameterSetDescription>("leadTrack", psd1);
     }
     {
       // encountered this at
