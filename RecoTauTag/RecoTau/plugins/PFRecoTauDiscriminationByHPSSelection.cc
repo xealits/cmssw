@@ -1,6 +1,9 @@
 #include "RecoTauTag/RecoTau/interface/TauDiscriminationProducerBase.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
@@ -22,6 +25,8 @@ class PFRecoTauDiscriminationByHPSSelection : public PFTauDiscriminationProducer
   explicit PFRecoTauDiscriminationByHPSSelection(const edm::ParameterSet&);
   ~PFRecoTauDiscriminationByHPSSelection() override;
   double discriminate(const reco::PFTauRef&) const override;
+
+  static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
  private:
   typedef StringObjectFunction<reco::PFTau> TauFunc;
@@ -318,6 +323,186 @@ PFRecoTauDiscriminationByHPSSelection::discriminate(const reco::PFTauRef& tau) c
     edm::LogPrint("PFTauByHPSSelect") << " passes all cuts." ;
   }
   return 1.0;
+}
+
+void
+PFRecoTauDiscriminationByHPSSelection::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // hpsSelectionDiscriminator
+  edm::ParameterSetDescription desc;
+  desc.add<edm::InputTag>("PFTauProducer", edm::InputTag("combinatoricRecoTaus"));
+  desc.add<int>("verbosity", 0);
+  desc.add<double>("minTauPt", 0.0);
+  {
+    edm::ParameterSetDescription psd0;
+    psd0.add<std::string>("BooleanOperator", "and");
+    desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
+  }
+  {
+    edm::ParameterSetDescription vpsd1;
+    vpsd1.add<double>("minPi0Mass", -1000.0);
+    vpsd1.add<std::string>("maxMass", "1.");
+    vpsd1.add<double>("maxPi0Mass", 1000000000.0);
+    vpsd1.add<unsigned int>("nPiZeros", 0);
+    vpsd1.add<double>("minMass", -1000.0);
+    vpsd1.add<unsigned int>("nChargedPFCandsMin", 1);
+    vpsd1.add<unsigned int>("nTracksMin", 1);
+    vpsd1.add<unsigned int>("nCharged", 1);
+    {
+      edm::ParameterSetDescription psd0;
+      psd0.add<bool>("phi", true);
+      psd0.add<bool>("eta", true);
+      psd0.add<bool>("mass", true);
+      vpsd1.add<edm::ParameterSetDescription>("applyBendCorrection", psd0);
+    }
+    vpsd1.add<double>("assumeStripMass", -1.0);
+    std::vector<edm::ParameterSet> temp1;
+    temp1.reserve(7);
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", -1000.0);
+      temp2.addParameter<std::string>("maxMass", "1.");
+      temp2.addParameter<double>("maxPi0Mass", 1000000000.0);
+      temp2.addParameter<unsigned int>("nPiZeros", 0);
+      temp2.addParameter<double>("minMass", -1000.0);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 1);
+      temp2.addParameter<unsigned int>("nCharged", 1);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", true);
+        ps2.addParameter<bool>("eta", true);
+        ps2.addParameter<bool>("mass", true);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", -1.0);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", -1000.0);
+      temp2.addParameter<std::string>("maxMass", "max(1.3, min(1.3*sqrt(pt/100.), 4.2))");
+      temp2.addParameter<double>("maxPi0Mass", 1000000000.0);
+      temp2.addParameter<unsigned int>("nPiZeros", 1);
+      temp2.addParameter<double>("minMass", 0.3);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 1);
+      temp2.addParameter<unsigned int>("nCharged", 1);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", true);
+        ps2.addParameter<bool>("eta", true);
+        ps2.addParameter<bool>("mass", true);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", 0.1349);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", 0.05);
+      temp2.addParameter<std::string>("maxMass", "max(1.2, min(1.2*sqrt(pt/100.), 4.0))");
+      temp2.addParameter<double>("maxPi0Mass", 0.2);
+      temp2.addParameter<unsigned int>("nPiZeros", 2);
+      temp2.addParameter<double>("minMass", 0.4);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 1);
+      temp2.addParameter<unsigned int>("nCharged", 1);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", true);
+        ps2.addParameter<bool>("eta", true);
+        ps2.addParameter<bool>("mass", true);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", 0.0);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", -1000.0);
+      temp2.addParameter<std::string>("maxMass", "1.2");
+      temp2.addParameter<double>("maxPi0Mass", 1000000000.0);
+      temp2.addParameter<unsigned int>("nPiZeros", 0);
+      temp2.addParameter<double>("minMass", 0.0);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 2);
+      temp2.addParameter<unsigned int>("nCharged", 2);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", false);
+        ps2.addParameter<bool>("eta", false);
+        ps2.addParameter<bool>("mass", false);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", -1.0);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", -1000.0);
+      temp2.addParameter<std::string>("maxMass", "max(1.2, min(1.2*sqrt(pt/100.), 4.0))");
+      temp2.addParameter<double>("maxPi0Mass", 1000000000.0);
+      temp2.addParameter<unsigned int>("nPiZeros", 1);
+      temp2.addParameter<double>("minMass", 0.0);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 2);
+      temp2.addParameter<unsigned int>("nCharged", 2);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", false);
+        ps2.addParameter<bool>("eta", false);
+        ps2.addParameter<bool>("mass", false);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", -1.0);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", -1000.0);
+      temp2.addParameter<std::string>("maxMass", "1.5");
+      temp2.addParameter<double>("maxPi0Mass", 1000000000.0);
+      temp2.addParameter<unsigned int>("nPiZeros", 0);
+      temp2.addParameter<double>("minMass", 0.8);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 2);
+      temp2.addParameter<unsigned int>("nCharged", 3);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", false);
+        ps2.addParameter<bool>("eta", false);
+        ps2.addParameter<bool>("mass", false);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", -1.0);
+      temp1.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minPi0Mass", -1000.0);
+      temp2.addParameter<std::string>("maxMass", "1.6");
+      temp2.addParameter<double>("maxPi0Mass", 1000000000.0);
+      temp2.addParameter<unsigned int>("nPiZeros", 1);
+      temp2.addParameter<double>("minMass", 0.9);
+      temp2.addParameter<unsigned int>("nChargedPFCandsMin", 1);
+      temp2.addParameter<unsigned int>("nTracksMin", 2);
+      temp2.addParameter<unsigned int>("nCharged", 3);
+      {
+        edm::ParameterSet ps2;
+        ps2.addParameter<bool>("phi", false);
+        ps2.addParameter<bool>("eta", false);
+        ps2.addParameter<bool>("mass", false);
+        temp2.addParameter<edm::ParameterSet>("applyBendCorrection", ps2);
+      }
+      temp2.addParameter<double>("assumeStripMass", -1.0);
+      temp1.push_back(temp2);
+    }
+    desc.addVPSet("decayModes", vpsd1, temp1);
+  }
+  desc.add<double>("matchingCone", 0.5);
+  desc.add<int>("minPixelHits", 1);
+  desc.add<bool>("requireTauChargedHadronsToBeChargedPFCands", false);
+  descriptions.add("hpsSelectionDiscriminator", desc);
 }
 
 DEFINE_FWK_MODULE(PFRecoTauDiscriminationByHPSSelection);

@@ -19,6 +19,9 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "RecoTauTag/RecoTau/interface/PFRecoTauChargedHadronPlugins.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauCleaningTools.h"
 #include "RecoTauTag/RecoTau/interface/RecoTauCommonUtilities.h"
@@ -59,6 +62,8 @@ public:
   void produce(edm::Event& evt, const edm::EventSetup& es) override;
   template <typename T>
   void print(const T& chargedHadrons);
+
+  static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
  private:
   typedef boost::ptr_vector<Builder> builderList;
@@ -309,6 +314,333 @@ void PFRecoTauChargedHadronProducer::print(const T& chargedHadrons)
 	     << " " << std::resetiosflags(std::ios::left) << std::setprecision(3) << (*ranker)(*chargedHadron) << std::endl;
     }
   }
+}
+
+void
+PFRecoTauChargedHadronProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // ak4PFJetsRecoTauChargedHadrons
+  edm::ParameterSetDescription desc;
+  {
+    edm::ParameterSetDescription vpsd_ranking;
+    vpsd_ranking.add<std::string>("selectionPassFunction", "-pt");
+    vpsd_ranking.add<double>("selectionFailValue", 1000.0);
+    vpsd_ranking.add<std::string>("selection", "algoIs(\"kChargedPFCandidate\")");
+    vpsd_ranking.add<std::string>("name", "ChargedPFCandidate");
+    vpsd_ranking.add<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
+    std::vector<edm::ParameterSet> ranking_vector;
+    ranking_vector.reserve(3);
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("selectionPassFunction", "-pt");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<std::string>("selection", "algoIs(\"kChargedPFCandidate\")");
+      temp2.addParameter<std::string>("name", "ChargedPFCandidate");
+      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
+      ranking_vector.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("selectionPassFunction", "-pt");
+      temp2.addParameter<std::string>("selection", "algoIs(\"kTrack\")");
+      temp2.addParameter<std::string>("name", "ChargedPFCandidate");
+      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      ranking_vector.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("selectionPassFunction", "-pt");
+      temp2.addParameter<std::string>("selection", "algoIs(\"kPFNeutralHadron\")");
+      temp2.addParameter<std::string>("name", "ChargedPFCandidate");
+      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      ranking_vector.push_back(temp2);
+    }
+    desc.addVPSet("ranking", vpsd_ranking, ranking_vector);
+  }
+  desc.add<int>("verbosity", 0);
+  desc.add<double>("maxJetAbsEta", 2.5);
+  desc.add<std::string>("outputSelection", "pt > 0.5");
+  desc.add<double>("minJetPt", 14.0);
+  desc.add<edm::InputTag>("jetSrc", edm::InputTag("ak4PFJets"));
+  {
+    edm::ParameterSetDescription vpsd_builders;
+    vpsd_builders.add<double>("minMergeChargedHadronPt", 100.0);
+    vpsd_builders.add<std::string>("name", "chargedPFCandidates");
+    vpsd_builders.add<double>("dRmergeNeutralHadronWrtOther", 0.005);
+    vpsd_builders.add<std::string>("plugin", "PFRecoTauChargedHadronFromPFCandidatePlugin");
+    vpsd_builders.add<int>("minBlockElementMatchesPhoton", 2);
+    vpsd_builders.add<double>("dRmergeNeutralHadronWrtNeutralHadron", 0.01);
+    vpsd_builders.add<int>("maxUnmatchedBlockElementsPhoton", 1);
+    vpsd_builders.addOptional<double>("dRcone");
+    vpsd_builders.addOptional<bool>("dRconeLimitedToJetArea");
+    vpsd_builders.addOptional<double>("dRmergeNeutralHadron");
+    vpsd_builders.addOptional<double>("dRmergePhoton");
+    vpsd_builders.addOptional<edm::InputTag>("srcTracks");
+    {
+      edm::ParameterSetDescription psd0;
+      {
+        edm::ParameterSetDescription psd1;
+        psd1.add<double>("maxDeltaZ", 0.4);
+        psd1.add<double>("minTrackPt", 0.5);
+        psd1.add<double>("minTrackVertexWeight", -1.0);
+        psd1.add<double>("maxTrackChi2", 100.0);
+        psd1.add<unsigned int>("minTrackPixelHits", 0);
+        psd1.add<double>("minGammaEt", 1.0);
+        psd1.add<unsigned int>("minTrackHits", 3);
+        psd1.add<double>("minNeutralHadronEt", 30.0);
+        psd1.add<double>("maxTransverseImpactParameter", 0.1);
+        psd0.add<edm::ParameterSetDescription>("signalQualityCuts", psd1);
+      }
+      {
+        edm::ParameterSetDescription psd1;
+        psd1.add<double>("minTrackPt", 0.5);
+        psd1.add<double>("minTrackVertexWeight", -1.0);
+        psd1.add<double>("maxTrackChi2", 100.0);
+        psd1.add<unsigned int>("minTrackPixelHits", 0);
+        psd1.add<double>("minGammaEt", 1.0);
+        psd1.add<unsigned int>("minTrackHits", 3);
+        psd1.add<double>("maxTransverseImpactParameter", 0.1);
+        psd0.add<edm::ParameterSetDescription>("vxAssocQualityCuts", psd1);
+      }
+      psd0.add<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+      {
+        edm::ParameterSetDescription psd1;
+        psd1.add<double>("maxDeltaZ", 0.2);
+        psd1.add<double>("minTrackPt", 1.0);
+        psd1.add<double>("minTrackVertexWeight", -1.0);
+        psd1.add<double>("maxTrackChi2", 100.0);
+        psd1.add<unsigned int>("minTrackPixelHits", 0);
+        psd1.add<double>("minGammaEt", 1.5);
+        psd1.add<unsigned int>("minTrackHits", 8);
+        psd1.add<double>("maxTransverseImpactParameter", 0.03);
+        psd0.add<edm::ParameterSetDescription>("isolationQualityCuts", psd1);
+      }
+      psd0.add<std::string>("pvFindingAlgo", "closestInDeltaZ");
+      psd0.add<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+      psd0.add<bool>("vertexTrackFiltering", false);
+      psd0.add<bool>("recoverLeadingTrk", false);
+      vpsd_builders.add<edm::ParameterSetDescription>("qualityCuts", psd0);
+    }
+    vpsd_builders.add<double>("dRmergeNeutralHadronWrtElectron", 0.05);
+    vpsd_builders.add<int>("minBlockElementMatchesNeutralHadron", 2);
+    vpsd_builders.add<double>("dRmergePhotonWrtOther", 0.005);
+    vpsd_builders.add<double>("dRmergeNeutralHadronWrtChargedHadron", 0.005);
+    vpsd_builders.add<double>("minMergeGammaEt", 1.0);
+    vpsd_builders.add<std::vector<int>>("chargedHadronCandidatesParticleIds", {1, 2, 3,});
+    vpsd_builders.add<double>("dRmergePhotonWrtElectron", 0.005);
+    vpsd_builders.add<int>("maxUnmatchedBlockElementsNeutralHadron", 1);
+    vpsd_builders.add<double>("dRmergePhotonWrtNeutralHadron", 0.01);
+    vpsd_builders.add<int>("verbosity", 0);
+    vpsd_builders.add<double>("dRmergePhotonWrtChargedHadron", 0.005);
+    vpsd_builders.add<double>("minMergeNeutralHadronEt", 1.0);
+    std::vector<edm::ParameterSet> builders_vector;
+    builders_vector.reserve(3);
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minMergeChargedHadronPt", 100.0);
+      temp2.addParameter<std::string>("name", "chargedPFCandidates");
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtOther", 0.005);
+      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronFromPFCandidatePlugin");
+      temp2.addParameter<int>("minBlockElementMatchesPhoton", 2);
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtNeutralHadron", 0.01);
+      temp2.addParameter<int>("maxUnmatchedBlockElementsPhoton", 1);
+      {
+        edm::ParameterSet ps2;
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("maxDeltaZ", 0.4);
+          ps3.addParameter<double>("minTrackPt", 0.5);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.0);
+          ps3.addParameter<unsigned int>("minTrackHits", 3);
+          ps3.addParameter<double>("minNeutralHadronEt", 30.0);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
+          ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
+        }
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("minTrackPt", 0.5);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.0);
+          ps3.addParameter<unsigned int>("minTrackHits", 3);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
+          ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
+        }
+        ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("maxDeltaZ", 0.2);
+          ps3.addParameter<double>("minTrackPt", 1.0);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.5);
+          ps3.addParameter<unsigned int>("minTrackHits", 8);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
+          ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
+        }
+        ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
+        ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+        ps2.addParameter<bool>("vertexTrackFiltering", false);
+        ps2.addParameter<bool>("recoverLeadingTrk", false);
+        temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
+      }
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtElectron", 0.05);
+      temp2.addParameter<int>("minBlockElementMatchesNeutralHadron", 2);
+      temp2.addParameter<double>("dRmergePhotonWrtOther", 0.005);
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtChargedHadron", 0.005);
+      temp2.addParameter<double>("minMergeGammaEt", 1.0);
+      temp2.addParameter<std::vector<int>>("chargedHadronCandidatesParticleIds", {
+        1,
+        2,
+        3,
+      });
+      temp2.addParameter<double>("dRmergePhotonWrtElectron", 0.005);
+      temp2.addParameter<int>("maxUnmatchedBlockElementsNeutralHadron", 1);
+      temp2.addParameter<double>("dRmergePhotonWrtNeutralHadron", 0.01);
+      temp2.addParameter<int>("verbosity", 0);
+      temp2.addParameter<double>("dRmergePhotonWrtChargedHadron", 0.005);
+      temp2.addParameter<double>("minMergeNeutralHadronEt", 1.0);
+      builders_vector.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minMergeChargedHadronPt", 100.0);
+      temp2.addParameter<double>("minMergeNeutralHadronEt", 1.0);
+      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronFromTrackPlugin");
+      temp2.addParameter<double>("dRmergePhoton", 0.05);
+      temp2.addParameter<int>("verbosity", 0);
+      {
+        edm::ParameterSet ps2;
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("maxDeltaZ", 0.4);
+          ps3.addParameter<double>("minTrackPt", 0.5);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.0);
+          ps3.addParameter<unsigned int>("minTrackHits", 3);
+          ps3.addParameter<double>("minNeutralHadronEt", 30.0);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
+          ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
+        }
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("minTrackPt", 0.5);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.0);
+          ps3.addParameter<unsigned int>("minTrackHits", 3);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
+          ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
+        }
+        ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("maxDeltaZ", 0.2);
+          ps3.addParameter<double>("minTrackPt", 1.0);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.5);
+          ps3.addParameter<unsigned int>("minTrackHits", 8);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
+          ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
+        }
+        ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
+        ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+        ps2.addParameter<bool>("vertexTrackFiltering", false);
+        ps2.addParameter<bool>("recoverLeadingTrk", false);
+        temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
+      }
+      temp2.addParameter<double>("dRmergeNeutralHadron", 0.1);
+      temp2.addParameter<double>("minMergeGammaEt", 1.0);
+      temp2.addParameter<bool>("dRconeLimitedToJetArea", false);
+      temp2.addParameter<double>("dRcone", 0.5);
+      temp2.addParameter<edm::InputTag>("srcTracks", edm::InputTag("generalTracks"));
+      temp2.addParameter<std::string>("name", "tracks");
+      builders_vector.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<double>("minMergeChargedHadronPt", 0.0);
+      temp2.addParameter<std::string>("name", "PFNeutralHadrons");
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtOther", 0.005);
+      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronFromPFCandidatePlugin");
+      temp2.addParameter<int>("minBlockElementMatchesPhoton", 2);
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtNeutralHadron", 0.01);
+      temp2.addParameter<int>("maxUnmatchedBlockElementsPhoton", 1);
+      {
+        edm::ParameterSet ps2;
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("maxDeltaZ", 0.4);
+          ps3.addParameter<double>("minTrackPt", 0.5);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.0);
+          ps3.addParameter<unsigned int>("minTrackHits", 3);
+          ps3.addParameter<double>("minNeutralHadronEt", 30.0);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
+          ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
+        }
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("minTrackPt", 0.5);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.0);
+          ps3.addParameter<unsigned int>("minTrackHits", 3);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
+          ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
+        }
+        ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+        {
+          edm::ParameterSet ps3;
+          ps3.addParameter<double>("maxDeltaZ", 0.2);
+          ps3.addParameter<double>("minTrackPt", 1.0);
+          ps3.addParameter<double>("minTrackVertexWeight", -1.0);
+          ps3.addParameter<double>("maxTrackChi2", 100.0);
+          ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
+          ps3.addParameter<double>("minGammaEt", 1.5);
+          ps3.addParameter<unsigned int>("minTrackHits", 8);
+          ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
+          ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
+        }
+        ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
+        ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+        ps2.addParameter<bool>("vertexTrackFiltering", false);
+        ps2.addParameter<bool>("recoverLeadingTrk", false);
+        temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
+      }
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtElectron", 0.05);
+      temp2.addParameter<int>("minBlockElementMatchesNeutralHadron", 2);
+      temp2.addParameter<double>("dRmergePhotonWrtOther", 0.005);
+      temp2.addParameter<std::vector<int>>("chargedHadronCandidatesParticleIds", {
+        5,
+      });
+      temp2.addParameter<double>("minMergeNeutralHadronEt", 1.0);
+      temp2.addParameter<double>("minMergeGammaEt", 1.0);
+      temp2.addParameter<double>("dRmergeNeutralHadronWrtChargedHadron", 0.005);
+      temp2.addParameter<int>("maxUnmatchedBlockElementsNeutralHadron", 1);
+      temp2.addParameter<double>("dRmergePhotonWrtNeutralHadron", 0.01);
+      temp2.addParameter<int>("verbosity", 0);
+      temp2.addParameter<double>("dRmergePhotonWrtChargedHadron", 0.005);
+      temp2.addParameter<double>("dRmergePhotonWrtElectron", 0.005);
+      builders_vector.push_back(temp2);
+    }
+    desc.addVPSet("builders", vpsd_builders, builders_vector);
+  }
+  descriptions.add("ak4PFJetsRecoTauChargedHadrons", desc);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

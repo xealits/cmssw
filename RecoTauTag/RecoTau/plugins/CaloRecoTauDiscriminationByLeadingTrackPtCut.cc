@@ -7,6 +7,9 @@
 
 #include "RecoTauTag/RecoTau/interface/TauDiscriminationProducerBase.h"
 
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "DataFormats/TrackReco/interface/Track.h"
 
 using namespace reco;
@@ -18,6 +21,8 @@ class CaloRecoTauDiscriminationByLeadingTrackPtCut final : public CaloTauDiscrim
       }
       ~CaloRecoTauDiscriminationByLeadingTrackPtCut() override{} 
       double discriminate(const CaloTauRef& theCaloTauRef) const override;
+
+      static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
    private:
       double minPtLeadTrack_;
@@ -33,6 +38,26 @@ double CaloRecoTauDiscriminationByLeadingTrackPtCut::discriminate(const CaloTauR
    } 
 
    return ( (leadTrackPt_ > minPtLeadTrack_) ? 1. : 0. );
+}
+
+void
+CaloRecoTauDiscriminationByLeadingTrackPtCut::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // caloRecoTauDiscriminationByLeadingTrackPtCut
+  edm::ParameterSetDescription desc;
+  desc.add<double>("MinPtLeadingTrack", 5.0);
+  {
+    edm::ParameterSetDescription requireLeadTrackCalo;
+    requireLeadTrackCalo.add<std::string>("BooleanOperator", "and");
+    {
+      edm::ParameterSetDescription leadTrack;
+      leadTrack.add<double>("cut", 0.5);
+      leadTrack.add<edm::InputTag>("Producer", edm::InputTag("caloRecoTauDiscriminationByLeadingTrackFinding"));
+      requireLeadTrackCalo.add<edm::ParameterSetDescription>("leadTrack", leadTrack);
+    }
+    desc.add<edm::ParameterSetDescription>("Prediscriminants", requireLeadTrackCalo);
+  }
+  desc.add<edm::InputTag>("CaloTauProducer", edm::InputTag("caloRecoTauProducer"));
+  descriptions.add("caloRecoTauDiscriminationByLeadingTrackPtCut", desc);
 }
 
 DEFINE_FWK_MODULE(CaloRecoTauDiscriminationByLeadingTrackPtCut);
@@ -62,4 +87,3 @@ DEFINE_FWK_MODULE(CaloRecoTauDiscriminationByLeadingTrackPtCut);
 }
    
 */
-
