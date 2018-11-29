@@ -141,14 +141,13 @@ PFTauDecayModeCutMultiplexer::fillDescriptions(edm::ConfigurationDescriptions& d
 
   desc.add<edm::InputTag>("PFTauDecayModeSrc");
   desc.add<edm::InputTag>("PFTauDiscriminantToMultiplex");
-  //desc.add<std::vector<edm::ParameterSet> >("computers");
 
   edm::ParameterSetDescription vpsd_computers;
   vpsd_computers.add<std::string>("computerName");
   vpsd_computers.add<double>("cut");
   vpsd_computers.add<std::vector<int> >("decayModeIndices");
 
-  //               name        description    defaults
+  //               name        description    defaults items
   //desc.addVPSet("computers", vpsd_builders, builders_vector);
   desc.addVPSet("computers", vpsd_computers);
 
