@@ -156,6 +156,30 @@ void TauDiscriminationProducerBase<TauType, TauDiscriminator>::produce(edm::Even
    endEvent(event);
 }
 
+//template<class TauType, class TauDiscriminator>
+//void TauDiscriminationProducerBase<TauType, TauDiscriminator>::fillProducerDescriptions(edm::ParameterSetDescription desc) {
+//template<>
+//void TauDiscriminationProducerBase::fillProducerDescriptions(edm::ParameterSetDescription desc) {
+//void TauDiscriminationProducerBase<TauType, TauDiscriminator>::fillProducerDescriptions(edm::ParameterSetDescription& desc) {
+//void TauDiscriminationProducerBase::fillProducerDescriptions(edm::ParameterSetDescription& desc) {
+template<class TauType, class TauDiscriminator>
+void TauDiscriminationProducerBase<TauType, TauDiscriminator>::fillProducerDescriptions(edm::ParameterSetDescription& desc) {
+  // helper function, it fills the description of the Producers parameter
+  desc.add<std::string>("@module_label");
+  desc.add<edm::InputTag>(getProducerString<TauType>());
+  {
+    edm::ParameterSetDescription psd0;
+    psd0.add<std::string>("BooleanOperator");
+    //{ optional producers // will it pass if I don't specify them?
+    //  edm::ParameterSetDescription psd1;
+    //  psd1.add<double>("cut");
+    //  psd1.add<edm::InputTag>("Producer");
+    //  psd0.addOptional<edm::ParameterSetDescription>("leadTrack", psd1);
+    //}
+    desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
+  }
+}
+
 // template specialiazation to get the correct (Calo/PF)TauProducer names
 template<> std::string getProducerString<PFTau>()   { return "PFTauProducer"; }
 template<> std::string getProducerString<CaloTau>() { return "CaloTauProducer"; }

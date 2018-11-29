@@ -26,6 +26,9 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+//#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+//#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/PATTauDiscriminator.h"
@@ -117,13 +120,13 @@ class PATTauDiscriminationByMVAIsolationRun2 : public PATTauDiscriminationProduc
 
        produces<pat::PATTauDiscriminator>("category");
     }  
-		
+
     void beginEvent(const edm::Event&, const edm::EventSetup&) override;
-		
+
     double discriminate(const TauRef&) const override;
-		
+
     void endEvent(edm::Event&) override;
-		
+
     ~PATTauDiscriminationByMVAIsolationRun2() override
     {
       if(!loadMVAfromDB_) delete mvaReader_;
@@ -133,7 +136,9 @@ class PATTauDiscriminationByMVAIsolationRun2 : public PATTauDiscriminationProduc
         delete (*it);
       }
     }
-    	
+
+    //static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
+
   private:
 		
     std::string moduleLabel_;
@@ -203,6 +208,21 @@ void PATTauDiscriminationByMVAIsolationRun2::endEvent(edm::Event& evt)
   // add all category indices to event
   evt.put(std::move(category_output_), "category");
 }
+
+/*
+void
+PATTauDiscriminationByMVAIsolationRun2::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  // caloRecoTauDiscriminationByIsolation
+  edm::ParameterSetDescription desc;
+
+  desc.add<bool>("ApplyDiscriminationByTrackerIsolation");
+  desc.add<unsigned>("TrackerIsolAnnulus_maximumOccupancy"); // unsigned means unsigned int, in my test it resulted in uint32
+  desc.add<bool>("ApplyDiscriminationByECALIsolation");
+  desc.add<double>("ECALisolAnnulus_maximumSumEtCut");
+
+  descriptions.add("caloRecoTauDiscriminationByIsolation", desc);
+}
+*/
 
 DEFINE_FWK_MODULE(PATTauDiscriminationByMVAIsolationRun2);
 
