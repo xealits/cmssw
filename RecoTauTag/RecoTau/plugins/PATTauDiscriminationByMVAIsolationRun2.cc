@@ -26,8 +26,8 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-//#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
-//#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
+#include <FWCore/ParameterSet/interface/ConfigurationDescriptions.h>
+#include <FWCore/ParameterSet/interface/ParameterSetDescription.h>
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
@@ -137,7 +137,7 @@ class PATTauDiscriminationByMVAIsolationRun2 : public PATTauDiscriminationProduc
       }
     }
 
-    //static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
+    static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
   private:
 		
@@ -209,20 +209,27 @@ void PATTauDiscriminationByMVAIsolationRun2::endEvent(edm::Event& evt)
   evt.put(std::move(category_output_), "category");
 }
 
-/*
 void
 PATTauDiscriminationByMVAIsolationRun2::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-  // caloRecoTauDiscriminationByIsolation
+  // patTauDiscriminationByMVAIsolationRun2
   edm::ParameterSetDescription desc;
 
-  desc.add<bool>("ApplyDiscriminationByTrackerIsolation");
-  desc.add<unsigned>("TrackerIsolAnnulus_maximumOccupancy"); // unsigned means unsigned int, in my test it resulted in uint32
-  desc.add<bool>("ApplyDiscriminationByECALIsolation");
-  desc.add<double>("ECALisolAnnulus_maximumSumEtCut");
+  desc.add<std::string>("mvaName");
+  desc.add<bool>("loadMVAfromDB");
+  desc.addOptional<edm::FileInPath>("inputFileName");
+  desc.add<std::string>("mvaOpt");
 
-  descriptions.add("caloRecoTauDiscriminationByIsolation", desc);
+  desc.add<std::string>("srcChargedIsoPtSum");
+  desc.add<std::string>("srcNeutralIsoPtSum");
+  desc.add<std::string>("srcPUcorrPtSum");
+  desc.add<std::string>("srcPhotonPtSumOutsideSignalCone");
+  desc.add<std::string>("srcFootprintCorrection");
+  desc.add<int>("verbosity");
+
+  fillProducerDescriptions(desc); // inherited from the base
+
+  descriptions.add("patTauDiscriminationByMVAIsolationRun2", desc);
 }
-*/
 
 DEFINE_FWK_MODULE(PATTauDiscriminationByMVAIsolationRun2);
 

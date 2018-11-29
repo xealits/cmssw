@@ -58,7 +58,6 @@ CaloRecoTauDiscriminationByIsolation::fillDescriptions(edm::ConfigurationDescrip
   desc.add<bool>("ApplyDiscriminationByECALIsolation");
   desc.add<double>("ECALisolAnnulus_maximumSumEtCut");
 
-  //CaloTauDiscriminationProducerBase::fillProducerDescriptions(desc);
   fillProducerDescriptions(desc); // inherited from the base
 
   descriptions.add("caloRecoTauDiscriminationByIsolation", desc);
