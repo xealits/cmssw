@@ -165,7 +165,6 @@ void TauDiscriminationProducerBase<TauType, TauDiscriminator>::produce(edm::Even
 template<class TauType, class TauDiscriminator>
 void TauDiscriminationProducerBase<TauType, TauDiscriminator>::fillProducerDescriptions(edm::ParameterSetDescription& desc) {
   // helper function, it fills the description of the Producers parameter
-  desc.add<std::string>("@module_label");
   desc.add<edm::InputTag>(getProducerString<TauType>());
   {
     edm::ParameterSetDescription pset_prediscriminants;
