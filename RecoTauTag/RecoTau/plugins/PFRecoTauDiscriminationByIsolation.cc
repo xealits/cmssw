@@ -665,44 +665,14 @@ PFRecoTauDiscriminationByIsolation::fillDescriptions(edm::ConfigurationDescripti
   desc.add<bool>("ApplyDiscriminationByTrackerIsolation", true);
   desc.add<bool>("storeRawPhotonSumPt_outsideSignalCone", false);
   desc.add<edm::InputTag>("rhoProducer", edm::InputTag("fixedGridRhoFastjetAll"));
+
   {
     edm::ParameterSetDescription vpsd1;
-    vpsd1.add<std::string>("selection", "decayMode() = 0");
-    vpsd1.add<std::string>("offset", "0.0");
-    std::vector<edm::ParameterSet> temp1;
-    temp1.reserve(5);
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selection", "decayMode() = 0");
-      temp2.addParameter<std::string>("offset", "0.0");
-      temp1.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selection", "decayMode() = 1 || decayMode() = 2");
-      temp2.addParameter<std::string>("offset", "0.0");
-      temp1.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selection", "decayMode() = 5");
-      temp2.addParameter<std::string>("offset", "2.7");
-      temp1.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selection", "decayMode() = 6");
-      temp2.addParameter<std::string>("offset", "0.0");
-      temp1.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selection", "decayMode() = 10");
-      temp2.addParameter<std::string>("offset", "max(2.0, 0.22*pt() - 2.0)");
-      temp1.push_back(temp2);
-    }
-    desc.addVPSet("footprintCorrections", vpsd1, temp1);
+    vpsd1.add<std::string>("selection");
+    vpsd1.add<std::string>("offset");
+    desc.addVPSet("footprintCorrections", vpsd1);
   }
+
   desc.add<std::string>("deltaBetaFactor", "0.38");
   desc.add<bool>("applyFootprintCorrection", false);
   desc.add<bool>("UseAllPFCandsForWeights", false);

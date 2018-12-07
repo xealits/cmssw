@@ -288,26 +288,18 @@ RecoTauDiscriminantCutMultiplexer::fillDescriptions(edm::ConfigurationDescriptio
   desc.add<edm::InputTag>("toMultiplex", edm::InputTag("fixme"));
   desc.add<edm::InputTag>("PFTauProducer", edm::InputTag("fixme"));
   desc.add<int>("verbosity", 0);
+
   {
     edm::ParameterSetDescription vpsd1;
-    vpsd1.add<unsigned int>("category", 0);
-    vpsd1.add<double>("cut", 0.5);
-    std::vector<edm::ParameterSet> temp1;
-    temp1.reserve(2);
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<unsigned int>("category", 0);
-      temp2.addParameter<double>("cut", 0.5);
-      temp1.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<unsigned int>("category", 1);
-      temp2.addParameter<double>("cut", 0.2);
-      temp1.push_back(temp2);
-    }
-    desc.addVPSet("mapping", vpsd1, temp1);
+    vpsd1.add<unsigned int>("category");
+    vpsd1.add<double>("cut");
+    desc.addVPSet("mapping", vpsd1);
   }
+
+  // the cut in the mapping is sometimes string:
+  // RecoTauTag/Configuration/python/HPSPFTaus_cff.py:hpsPFTauDiscriminationByLooseIsolationMVArun2v1DBdR03oldDMwLT = hpsPFTauDiscriminationByVLooseIsolationMVArun2v1DBdR03oldDMwLT.clone()
+  // RecoTauTag/Configuration/python/HPSPFTaus_cff.py:hpsPFTauDiscriminationByLooseIsolationMVArun2v1DBdR03oldDMwLT.mapping[0].cut = cms.string("RecoTauTag_tauIdMVADBdR03oldDMwLTv1_WPEff80")
+
   desc.add<edm::FileInPath>("inputFileName", edm::FileInPath("RecoTauTag/RecoTau/test/dummyMVAinputFile"));
   desc.add<bool>("loadMVAfromDB", true);
   {

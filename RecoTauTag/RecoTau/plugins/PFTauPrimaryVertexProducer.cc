@@ -279,20 +279,14 @@ void
 PFTauPrimaryVertexProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   // PFTauPrimaryVertexProducer
   edm::ParameterSetDescription desc;
+
   {
     edm::ParameterSetDescription vpsd1;
-    vpsd1.add<edm::InputTag>("discriminator", edm::InputTag("hpsPFTauDiscriminationByDecayModeFinding"));
-    vpsd1.add<double>("selectionCut", 0.5);
-    std::vector<edm::ParameterSet> temp1;
-    temp1.reserve(1);
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<edm::InputTag>("discriminator", edm::InputTag("hpsPFTauDiscriminationByDecayModeFinding"));
-      temp2.addParameter<double>("selectionCut", 0.5);
-      temp1.push_back(temp2);
-    }
-    desc.addVPSet("discriminators", vpsd1, temp1);
+    vpsd1.add<edm::InputTag>("discriminator");
+    vpsd1.add<double>("selectionCut");
+    desc.addVPSet("discriminators", vpsd1);
   }
+
   desc.add<bool>("RemoveElectronTracks", false);
   desc.add<std::string>("cut", "pt > 18.0 & abs(eta)<2.3");
   desc.add<edm::InputTag>("beamSpot", edm::InputTag("offlineBeamSpot"));

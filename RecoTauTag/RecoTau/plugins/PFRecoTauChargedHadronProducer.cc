@@ -327,37 +327,9 @@ PFRecoTauChargedHadronProducer::fillDescriptions(edm::ConfigurationDescriptions&
     vpsd_ranking.add<std::string>("selection", "algoIs(\"kChargedPFCandidate\")");
     vpsd_ranking.add<std::string>("name", "ChargedPFCandidate");
     vpsd_ranking.add<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
-    std::vector<edm::ParameterSet> ranking_vector;
-    ranking_vector.reserve(3);
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selectionPassFunction", "-pt");
-      temp2.addParameter<double>("selectionFailValue", 1000.0);
-      temp2.addParameter<std::string>("selection", "algoIs(\"kChargedPFCandidate\")");
-      temp2.addParameter<std::string>("name", "ChargedPFCandidate");
-      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
-      ranking_vector.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selectionPassFunction", "-pt");
-      temp2.addParameter<std::string>("selection", "algoIs(\"kTrack\")");
-      temp2.addParameter<std::string>("name", "ChargedPFCandidate");
-      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
-      temp2.addParameter<double>("selectionFailValue", 1000.0);
-      ranking_vector.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<std::string>("selectionPassFunction", "-pt");
-      temp2.addParameter<std::string>("selection", "algoIs(\"kPFNeutralHadron\")");
-      temp2.addParameter<std::string>("name", "ChargedPFCandidate");
-      temp2.addParameter<std::string>("plugin", "PFRecoTauChargedHadronStringQuality");
-      temp2.addParameter<double>("selectionFailValue", 1000.0);
-      ranking_vector.push_back(temp2);
-    }
-    desc.addVPSet("ranking", vpsd_ranking, ranking_vector);
+    desc.addVPSet("ranking", vpsd_ranking);
   }
+
   desc.add<int>("verbosity", 0);
   desc.add<double>("maxJetAbsEta", 2.5);
   desc.add<std::string>("outputSelection", "pt > 0.5");

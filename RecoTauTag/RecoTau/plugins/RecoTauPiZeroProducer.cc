@@ -265,25 +265,13 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
     // ak4PFJetsLegacyTaNCPiZeros
     edm::ParameterSetDescription desc;
     desc.add<double>("massHypothesis", 0.136);
-    {
-      std::vector<edm::ParameterSet> ranking_vactor;
-      ranking_vactor.reserve(1);
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("selectionPassFunction", "abs(mass() - 0.13579)");
-        temp2.addParameter<double>("selectionFailValue", 1000);
-        temp2.addParameter<std::string>("selection", "mass() < 0.2");
-        temp2.addParameter<std::string>("name", "PFTDM");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStringQuality");
-        ranking_vactor.push_back(temp2);
-      }
-      desc.addVPSet("ranking", vpsd_ranking, ranking_vactor);
-    }
+    desc.addVPSet("ranking", vpsd_ranking);
     desc.add<int>("verbosity", 0);
     desc.add<double>("maxJetAbsEta", 2.5);
     desc.add<std::string>("outputSelection", "pt > 1.5");
     desc.add<double>("minJetPt", 14.0);
     desc.add<edm::InputTag>("jetSrc", edm::InputTag("ak4PFJets"));
+
     {
       edm::ParameterSetDescription vpsd_builders;
       {
@@ -344,116 +332,9 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
       vpsd_builders.addOptional<int>("verbosity");
       vpsd_builders.addOptional<bool>("applyElecTrackQcuts");
 
-      std::vector<edm::ParameterSet> builders_vector;
-      builders_vector.reserve(2);
-      {
-        edm::ParameterSet temp2;
-        {
-          edm::ParameterSet ps2;
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.4);
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("minNeutralHadronEt", 30.0);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
-          }
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.2);
-            ps3.addParameter<double>("minTrackPt", 1.0);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.5);
-            ps3.addParameter<unsigned int>("minTrackHits", 8);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
-            ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
-          ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-          ps2.addParameter<bool>("vertexTrackFiltering", false);
-          ps2.addParameter<bool>("recoverLeadingTrk", false);
-          temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
-        }
-        temp2.addParameter<std::string>("name", "1");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroTrivialPlugin");
-        builders_vector.push_back(temp2);
-      }
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<double>("maxMass", -1.0);
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroCombinatoricPlugin");
-        temp2.addParameter<double>("minMass", 0.0);
-        {
-          edm::ParameterSet ps2;
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.4);
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("minNeutralHadronEt", 30.0);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
-          }
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.2);
-            ps3.addParameter<double>("minTrackPt", 1.0);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.5);
-            ps3.addParameter<unsigned int>("minTrackHits", 8);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
-            ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
-          ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-          ps2.addParameter<bool>("vertexTrackFiltering", false);
-          ps2.addParameter<bool>("recoverLeadingTrk", false);
-          temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
-        }
-        temp2.addParameter<unsigned int>("choose", 2);
-        temp2.addParameter<unsigned int>("maxInputGammas", 10);
-        temp2.addParameter<std::string>("name", "2");
-        builders_vector.push_back(temp2);
-      }
-      desc.addVPSet("builders", vpsd_builders, builders_vector);
+      desc.addVPSet("builders", vpsd_builders);
     }
+
     descriptions.add("ak4PFJetsLegacyTaNCPiZeros", desc);
   }
 
@@ -461,20 +342,7 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
     // ak4PFJetsRecoTauGreedyPiZeros
     edm::ParameterSetDescription desc;
     desc.add<double>("massHypothesis", 0.136);
-    {
-      std::vector<edm::ParameterSet> ranking_vector;
-      ranking_vector.reserve(1);
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("selectionPassFunction", "-1*numberOfDaughters()");
-        temp2.addParameter<double>("selectionFailValue", 1000);
-        temp2.addParameter<std::string>("selection", "algoIs(\"kStrips\") || (abs(eta()) < 1.5 & abs(mass() - 0.13579) < 0.05) || (abs(eta()) > 1.5 & mass < 0.2)");
-        temp2.addParameter<std::string>("name", "Greedy");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStringQuality");
-        ranking_vector.push_back(temp2);
-      }
-      desc.addVPSet("ranking", vpsd_ranking, ranking_vector);
-    }
+    desc.addVPSet("ranking", vpsd_ranking);
     desc.add<int>("verbosity", 0);
     desc.add<double>("maxJetAbsEta", 2.5);
     desc.add<std::string>("outputSelection", "pt > 1.5");
@@ -543,69 +411,8 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
       vpsd_builders.addOptional<bool>("updateStripAfterEachDaughter");
       vpsd_builders.addOptional<int>("verbosity");
       vpsd_builders.addOptional<bool>("applyElecTrackQcuts");
-      std::vector<edm::ParameterSet> builders_vector;
-      builders_vector.reserve(1);
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<int>("maxInputStrips", 5);
-        temp2.addParameter<std::string>("name", "cs");
-        temp2.addParameter<double>("stripPhiAssociationDistance", 0.2);
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStripPlugin");
-        {
-          edm::ParameterSet ps2;
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.4);
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("minNeutralHadronEt", 30.0);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
-          }
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.2);
-            ps3.addParameter<double>("minTrackPt", 1.0);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.5);
-            ps3.addParameter<unsigned int>("minTrackHits", 8);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
-            ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
-          ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-          ps2.addParameter<bool>("vertexTrackFiltering", false);
-          ps2.addParameter<bool>("recoverLeadingTrk", false);
-          temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
-        }
-        temp2.addParameter<double>("stripMassWhenCombining", 0.0);
-        temp2.addParameter<bool>("makeCombinatoricStrips", true);
-        temp2.addParameter<std::vector<int>>("stripCandidatesParticleIds", {
-          2,
-          4,
-        });
-        temp2.addParameter<double>("stripEtaAssociationDistance", 0.05);
-        builders_vector.push_back(temp2);
-      }
-      desc.addVPSet("builders", vpsd_builders, builders_vector);
+
+      desc.addVPSet("builders", vpsd_builders);
     }
     descriptions.add("ak4PFJetsRecoTauGreedyPiZeros", desc);
   }
@@ -614,38 +421,7 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
     // ak4PFJetsRecoTauPiZeros
     edm::ParameterSetDescription desc;
     desc.add<double>("massHypothesis", 0.136);
-    {
-      std::vector<edm::ParameterSet> ranking_vector;
-      ranking_vector.reserve(3);
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("selectionPassFunction", "abs(mass() - 0.13579)");
-        temp2.addParameter<double>("selectionFailValue", 1000);
-        temp2.addParameter<std::string>("selection", "abs(eta()) < 1.5 & abs(mass() - 0.13579) < 0.05");
-        temp2.addParameter<std::string>("name", "nearPiZeroMass");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStringQuality");
-        ranking_vector.push_back(temp2);
-      }
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("selectionPassFunction", "abs(mass() - 0.13579)");
-        temp2.addParameter<double>("selectionFailValue", 1000);
-        temp2.addParameter<std::string>("selection", "abs(eta()) > 1.5 & mass() < 0.2");
-        temp2.addParameter<std::string>("name", "nearPiZeroMass");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStringQuality");
-        ranking_vector.push_back(temp2);
-      }
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("selectionPassFunction", "abs(mass() - 0.13579)");
-        temp2.addParameter<double>("selectionFailValue", 1000);
-        temp2.addParameter<std::string>("selection", "algoIs(\"kStrips\")");
-        temp2.addParameter<std::string>("name", "InStrip");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStringQuality");
-        ranking_vector.push_back(temp2);
-      }
-      desc.addVPSet("ranking", vpsd_ranking, ranking_vector);
-    }
+    desc.addVPSet("ranking", vpsd_ranking);
     desc.add<int>("verbosity", 0);
     desc.add<double>("maxJetAbsEta", 2.5);
     desc.add<std::string>("outputSelection", "pt > 1.5");
@@ -714,142 +490,10 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
       vpsd_builders.addOptional<bool>("updateStripAfterEachDaughter");
       vpsd_builders.addOptional<int>("verbosity");
       vpsd_builders.addOptional<bool>("applyElecTrackQcuts");
-      std::vector<edm::ParameterSet> builders_vector;
-      builders_vector.reserve(2);
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<double>("maxMass", -1.0);
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroCombinatoricPlugin");
-        temp2.addParameter<double>("minMass", 0.0);
-        {
-          edm::ParameterSet ps2;
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.4);
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("minNeutralHadronEt", 30.0);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
-          }
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.2);
-            ps3.addParameter<double>("minTrackPt", 1.0);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.5);
-            ps3.addParameter<unsigned int>("minTrackHits", 8);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
-            ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
-          ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-          ps2.addParameter<bool>("vertexTrackFiltering", false);
-          ps2.addParameter<bool>("recoverLeadingTrk", false);
-          temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
-        }
-        temp2.addParameter<unsigned int>("choose", 2);
-        temp2.addParameter<unsigned int>("maxInputGammas", 10);
-        temp2.addParameter<std::string>("name", "2");
-        builders_vector.push_back(temp2);
-      }
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("name", "s");
-        {
-          edm::ParameterSet ps2;
-          ps2.addParameter<std::string>("function", "TMath::Min(0.3, TMath::Max(0.05, [0]*TMath::Power(pT, -[1])))");
-          ps2.addParameter<double>("par1", 0.707716);
-          ps2.addParameter<double>("par0", 0.352476);
-          temp2.addParameter<edm::ParameterSet>("stripPhiAssociationDistance", ps2);
-        }
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStripPlugin3");
-        temp2.addParameter<double>("minGammaEtStripAdd", 1.0);
-        temp2.addParameter<double>("minGammaEtStripSeed", 1.0);
-        {
-          edm::ParameterSet ps2;
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.4);
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("minNeutralHadronEt", 30.0);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
-          }
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.2);
-            ps3.addParameter<double>("minTrackPt", 1.0);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.5);
-            ps3.addParameter<unsigned int>("minTrackHits", 8);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
-            ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
-          ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-          ps2.addParameter<bool>("vertexTrackFiltering", false);
-          ps2.addParameter<bool>("recoverLeadingTrk", false);
-          temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
-        }
-        {
-          edm::ParameterSet ps2;
-          ps2.addParameter<std::string>("function", "TMath::Min(0.15, TMath::Max(0.05, [0]*TMath::Power(pT, -[1])))");
-          ps2.addParameter<double>("par1", 0.658701);
-          ps2.addParameter<double>("par0", 0.197077);
-          temp2.addParameter<edm::ParameterSet>("stripEtaAssociationDistance", ps2);
-        }
-        temp2.addParameter<int>("maxStripBuildIterations", -1);
-        temp2.addParameter<bool>("updateStripAfterEachDaughter", false);
-        temp2.addParameter<bool>("makeCombinatoricStrips", false);
-        temp2.addParameter<bool>("applyElecTrackQcuts", false);
-        temp2.addParameter<std::vector<int>>("stripCandidatesParticleIds", {
-          2,
-          4,
-        });
-        temp2.addParameter<double>("minStripEt", 1.0);
-        temp2.addParameter<int>("verbosity", 0);
-        builders_vector.push_back(temp2);
-      }
-      desc.addVPSet("builders", vpsd_builders, builders_vector);
+
+      desc.addVPSet("builders", vpsd_builders);
     }
+
     descriptions.add("ak4PFJetsRecoTauPiZeros", desc);
   }
 
@@ -857,20 +501,7 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
     // ak4PFJetsLegacyHPSPiZeros
     edm::ParameterSetDescription desc;
     desc.add<double>("massHypothesis", 0.136);
-    {
-      std::vector<edm::ParameterSet> ranking_vector;
-      ranking_vector.reserve(1);
-      {
-        edm::ParameterSet temp2;
-        temp2.addParameter<std::string>("selectionPassFunction", "abs(mass() - 0.13579)");
-        temp2.addParameter<double>("selectionFailValue", 1000);
-        temp2.addParameter<std::string>("selection", "algoIs(\"kStrips\")");
-        temp2.addParameter<std::string>("name", "InStrip");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStringQuality");
-        ranking_vector.push_back(temp2);
-      }
-      desc.addVPSet("ranking", vpsd_ranking, ranking_vector);
-    }
+    desc.addVPSet("ranking", vpsd_ranking);
     desc.add<int>("verbosity", 0);
     desc.add<double>("maxJetAbsEta", 2.5);
     desc.add<std::string>("outputSelection", "pt > 0");
@@ -950,87 +581,9 @@ RecoTauPiZeroProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
       vpsd_builders.addOptional<int>("verbosity");
       vpsd_builders.addOptional<bool>("applyElecTrackQcuts");
 
-      std::vector<edm::ParameterSet> builders_vector;
-      builders_vector.reserve(1);
-      {
-        edm::ParameterSet temp2;
-        {
-          edm::ParameterSet ps2;
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.4);
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("minNeutralHadronEt", 30.0);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("signalQualityCuts", ps3);
-          }
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("minTrackPt", 0.5);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.0);
-            ps3.addParameter<unsigned int>("minTrackHits", 3);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.1);
-            ps2.addParameter<edm::ParameterSet>("vxAssocQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-          {
-            edm::ParameterSet ps3;
-            ps3.addParameter<double>("maxDeltaZ", 0.2);
-            ps3.addParameter<double>("minTrackPt", 1.0);
-            ps3.addParameter<double>("minTrackVertexWeight", -1.0);
-            ps3.addParameter<double>("maxTrackChi2", 100.0);
-            ps3.addParameter<unsigned int>("minTrackPixelHits", 0);
-            ps3.addParameter<double>("minGammaEt", 1.5);
-            ps3.addParameter<unsigned int>("minTrackHits", 8);
-            ps3.addParameter<double>("maxTransverseImpactParameter", 0.03);
-            ps2.addParameter<edm::ParameterSet>("isolationQualityCuts", ps3);
-          }
-          ps2.addParameter<std::string>("pvFindingAlgo", "closestInDeltaZ");
-          ps2.addParameter<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-          ps2.addParameter<bool>("vertexTrackFiltering", false);
-          ps2.addParameter<bool>("recoverLeadingTrk", false);
-          temp2.addParameter<edm::ParameterSet>("qualityCuts", ps2);
-        }
-        {
-          edm::ParameterSet ps2;
-          ps2.addParameter<std::string>("function", "TMath::Min(0.3, TMath::Max(0.05, [0]*TMath::Power(pT, -[1])))");
-          ps2.addParameter<double>("par1", 0.707716);
-          ps2.addParameter<double>("par0", 0.352476);
-          temp2.addParameter<edm::ParameterSet>("stripPhiAssociationDistance", ps2);
-        }
-        {
-          edm::ParameterSet ps2;
-          ps2.addParameter<std::string>("function", "TMath::Min(0.15, TMath::Max(0.05, [0]*TMath::Power(pT, -[1])))");
-          ps2.addParameter<double>("par1", 0.658701);
-          ps2.addParameter<double>("par0", 0.197077);
-          temp2.addParameter<edm::ParameterSet>("stripEtaAssociationDistance", ps2);
-        }
-        temp2.addParameter<std::string>("name", "s");
-        temp2.addParameter<std::string>("plugin", "RecoTauPiZeroStripPlugin3");
-        temp2.addParameter<double>("minGammaEtStripAdd", 1.0);
-        temp2.addParameter<double>("minGammaEtStripSeed", 1.0);
-        temp2.addParameter<int>("maxStripBuildIterations", -1);
-        temp2.addParameter<bool>("updateStripAfterEachDaughter", false);
-        temp2.addParameter<bool>("makeCombinatoricStrips", false);
-        temp2.addParameter<bool>("applyElecTrackQcuts", false);
-        temp2.addParameter<std::vector<int>>("stripCandidatesParticleIds", {
-          2,
-          4,
-        });
-        temp2.addParameter<double>("minStripEt", 1.0);
-        temp2.addParameter<int>("verbosity", 0);
-        builders_vector.push_back(temp2);
-      }
-      desc.addVPSet("builders", vpsd_builders, builders_vector);
+      desc.addVPSet("builders", vpsd_builders);
     }
+
     descriptions.add("ak4PFJetsLegacyHPSPiZeros", desc);
     descriptions.add("ak4PFJetsLegacyHPSPiZerosBoosted", desc); // this one is generated in configs with a strange procedure
     // RecoTauTag/Configuration/python/boostedHPSPFTaus_cfi.py
