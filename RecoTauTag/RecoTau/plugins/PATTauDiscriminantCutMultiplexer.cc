@@ -286,24 +286,10 @@ PATTauDiscriminantCutMultiplexer::fillDescriptions(edm::ConfigurationDescription
   desc.add<edm::InputTag>("toMultiplex", edm::InputTag("fixme"));
   desc.add<int>("verbosity", 0);
   {
-    edm::ParameterSetDescription vpsd1;
-    vpsd1.add<unsigned int>("category", 0);
-    vpsd1.add<double>("cut", 0.5);
-    std::vector<edm::ParameterSet> temp1;
-    temp1.reserve(2);
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<unsigned int>("category", 0);
-      temp2.addParameter<double>("cut", 0.5);
-      temp1.push_back(temp2);
-    }
-    {
-      edm::ParameterSet temp2;
-      temp2.addParameter<unsigned int>("category", 1);
-      temp2.addParameter<double>("cut", 0.2);
-      temp1.push_back(temp2);
-    }
-    desc.addVPSet("mapping", vpsd1, temp1);
+    edm::ParameterSetDescription vpset_mapping;
+    vpset_mapping.add<unsigned int>("category");
+    vpset_mapping.add<double>("cut");
+    desc.addVPSet("mapping", vpset_mapping);
   }
   desc.add<edm::FileInPath>("inputFileName", edm::FileInPath("RecoTauTag/RecoTau/test/dummyMVAinputFile"));
   desc.add<bool>("loadMVAfromDB", true);
