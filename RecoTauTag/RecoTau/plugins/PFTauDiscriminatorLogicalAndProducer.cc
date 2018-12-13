@@ -47,9 +47,10 @@ void
 PFTauDiscriminatorLogicalAndProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   // PFTauDiscriminatorLogicalAndProducer
   edm::ParameterSetDescription desc;
-  desc.add<double>("PassValue", 1.0);
+
   {
     edm::ParameterSetDescription psd0;
+    psd0.add<std::string>("BooleanOperator", "and");
     {
       edm::ParameterSetDescription psd1;
       psd1.add<double>("cut", 0.5);
@@ -62,9 +63,10 @@ PFTauDiscriminatorLogicalAndProducer::fillDescriptions(edm::ConfigurationDescrip
       psd1.add<edm::InputTag>("Producer", edm::InputTag("pfRecoTauDiscriminationByIsolation"));
       psd0.add<edm::ParameterSetDescription>("discr1", psd1);
     }
-    psd0.add<std::string>("BooleanOperator", "and");
     desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
   }
+
+  desc.add<double>("PassValue", 1.0);
   desc.add<double>("FailValue", 0.0);
   desc.add<edm::InputTag>("PFTauProducer", edm::InputTag("pfRecoTauProducer"));
   descriptions.add("PFTauDiscriminatorLogicalAndProducer", desc);
