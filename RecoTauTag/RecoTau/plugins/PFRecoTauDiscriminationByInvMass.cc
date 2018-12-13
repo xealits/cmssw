@@ -82,8 +82,8 @@ PFRecoTauDiscriminationByInvMass::fillDescriptions(edm::ConfigurationDescription
   }
   {
     edm::ParameterSetDescription psd0;
-    psd0.add<double>("max", 1.4);
-    psd0.add<double>("min", 0.0);
+    psd0.add<double>("max");
+    psd0.add<double>("min");
     desc.add<edm::ParameterSetDescription>("select", psd0);
   }
   desc.add<edm::InputTag>("PFTauProducer", edm::InputTag("pfRecoTauProducer"));

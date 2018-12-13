@@ -117,51 +117,49 @@ CaloRecoTauDiscriminationByFlightPathSignificance::fillDescriptions(edm::Configu
   desc.add<double>("flightPathSig", 1.5);
   desc.add<edm::InputTag>("PVProducer", edm::InputTag("offlinePrimaryVertices"));
   desc.add<bool>("BooleanOutput", true);
-  {
-    edm::ParameterSetDescription psd0;
-    {
-      edm::ParameterSetDescription psd1;
-      psd1.add<double>("maxDeltaZ", 0.4);
-      psd1.add<double>("minTrackPt", 0.5);
-      psd1.add<double>("minTrackVertexWeight", -1.0);
-      psd1.add<double>("maxTrackChi2", 100.0);
-      psd1.add<unsigned int>("minTrackPixelHits", 0);
-      psd1.add<double>("minGammaEt", 1.0);
-      psd1.add<unsigned int>("minTrackHits", 3);
-      psd1.add<double>("minNeutralHadronEt", 30.0);
-      psd1.add<double>("maxTransverseImpactParameter", 0.1);
-      psd0.add<edm::ParameterSetDescription>("signalQualityCuts", psd1);
-    }
-    {
-      edm::ParameterSetDescription psd1;
-      psd1.add<double>("minTrackPt", 0.5);
-      psd1.add<double>("minTrackVertexWeight", -1.0);
-      psd1.add<double>("maxTrackChi2", 100.0);
-      psd1.add<unsigned int>("minTrackPixelHits", 0);
-      psd1.add<double>("minGammaEt", 1.0);
-      psd1.add<unsigned int>("minTrackHits", 3);
-      psd1.add<double>("maxTransverseImpactParameter", 0.1);
-      psd0.add<edm::ParameterSetDescription>("vxAssocQualityCuts", psd1);
-    }
-    psd0.add<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
-    {
-      edm::ParameterSetDescription psd1;
-      psd1.add<double>("maxDeltaZ", 0.2);
-      psd1.add<double>("minTrackPt", 1.0);
-      psd1.add<double>("minTrackVertexWeight", -1.0);
-      psd1.add<double>("maxTrackChi2", 100.0);
-      psd1.add<unsigned int>("minTrackPixelHits", 0);
-      psd1.add<double>("minGammaEt", 1.5);
-      psd1.add<unsigned int>("minTrackHits", 8);
-      psd1.add<double>("maxTransverseImpactParameter", 0.03);
-      psd0.add<edm::ParameterSetDescription>("isolationQualityCuts", psd1);
-    }
-    psd0.add<std::string>("pvFindingAlgo", "closestInDeltaZ");
-    psd0.add<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
-    psd0.add<bool>("vertexTrackFiltering", false);
-    psd0.add<bool>("recoverLeadingTrk", false);
-    desc.add<edm::ParameterSetDescription>("qualityCuts", psd0);
-  }
+
+  edm::ParameterSetDescription pset_signalQualityCuts;
+  pset_signalQualityCuts.add<double>("maxDeltaZ", 0.4);
+  pset_signalQualityCuts.add<double>("minTrackPt", 0.5);
+  pset_signalQualityCuts.add<double>("minTrackVertexWeight", -1.0);
+  pset_signalQualityCuts.add<double>("maxTrackChi2", 100.0);
+  pset_signalQualityCuts.add<unsigned int>("minTrackPixelHits", 0);
+  pset_signalQualityCuts.add<double>("minGammaEt", 1.0);
+  pset_signalQualityCuts.add<unsigned int>("minTrackHits", 3);
+  pset_signalQualityCuts.add<double>("minNeutralHadronEt", 30.0);
+  pset_signalQualityCuts.add<double>("maxTransverseImpactParameter", 0.1);
+
+  edm::ParameterSetDescription pset_vxAssocQualityCuts;
+  pset_vxAssocQualityCuts.add<double>("minTrackPt", 0.5);
+  pset_vxAssocQualityCuts.add<double>("minTrackVertexWeight", -1.0);
+  pset_vxAssocQualityCuts.add<double>("maxTrackChi2", 100.0);
+  pset_vxAssocQualityCuts.add<unsigned int>("minTrackPixelHits", 0);
+  pset_vxAssocQualityCuts.add<double>("minGammaEt", 1.0);
+  pset_vxAssocQualityCuts.add<unsigned int>("minTrackHits", 3);
+  pset_vxAssocQualityCuts.add<double>("maxTransverseImpactParameter", 0.1);
+
+  edm::ParameterSetDescription pset_isolationQualityCuts;
+  pset_isolationQualityCuts.add<double>("maxDeltaZ", 0.2);
+  pset_isolationQualityCuts.add<double>("minTrackPt", 1.0);
+  pset_isolationQualityCuts.add<double>("minTrackVertexWeight", -1.0);
+  pset_isolationQualityCuts.add<double>("maxTrackChi2", 100.0);
+  pset_isolationQualityCuts.add<unsigned int>("minTrackPixelHits", 0);
+  pset_isolationQualityCuts.add<double>("minGammaEt", 1.5);
+  pset_isolationQualityCuts.add<unsigned int>("minTrackHits", 8);
+  pset_isolationQualityCuts.add<double>("maxTransverseImpactParameter", 0.03);
+
+  edm::ParameterSetDescription pset_qualityCuts;
+  pset_qualityCuts.add<edm::ParameterSetDescription>("signalQualityCuts",    pset_signalQualityCuts);
+  pset_qualityCuts.add<edm::ParameterSetDescription>("vxAssocQualityCuts",   pset_vxAssocQualityCuts);
+  pset_qualityCuts.add<edm::ParameterSetDescription>("isolationQualityCuts", pset_isolationQualityCuts);
+  pset_qualityCuts.add<std::string>("leadingTrkOrPFCandOption", "leadPFCand");
+  pset_qualityCuts.add<std::string>("pvFindingAlgo", "closestInDeltaZ");
+  pset_qualityCuts.add<edm::InputTag>("primaryVertexSrc", edm::InputTag("offlinePrimaryVertices"));
+  pset_qualityCuts.add<bool>("vertexTrackFiltering", false);
+  pset_qualityCuts.add<bool>("recoverLeadingTrk", false);
+
+  desc.add<edm::ParameterSetDescription>("qualityCuts", pset_qualityCuts);
+
   {
     edm::ParameterSetDescription psd0;
     psd0.add<std::string>("BooleanOperator", "and");
@@ -173,6 +171,7 @@ CaloRecoTauDiscriminationByFlightPathSignificance::fillDescriptions(edm::Configu
     }
     desc.add<edm::ParameterSetDescription>("Prediscriminants", psd0);
   }
+
   desc.add<bool>("UsePVerror", true);
   descriptions.add("caloRecoTauDiscriminationByFlightPathSignificance", desc);
 }

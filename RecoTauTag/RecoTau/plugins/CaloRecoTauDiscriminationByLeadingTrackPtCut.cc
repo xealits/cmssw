@@ -45,18 +45,18 @@ CaloRecoTauDiscriminationByLeadingTrackPtCut::fillDescriptions(edm::Configuratio
   // caloRecoTauDiscriminationByLeadingTrackPtCut
   edm::ParameterSetDescription desc;
   desc.add<double>("MinPtLeadingTrack", 5.0);
+  desc.add<edm::InputTag>("CaloTauProducer", edm::InputTag("caloRecoTauProducer"));
   {
     edm::ParameterSetDescription requireLeadTrackCalo;
     requireLeadTrackCalo.add<std::string>("BooleanOperator", "and");
     {
       edm::ParameterSetDescription leadTrack;
-      leadTrack.add<double>("cut", 0.5);
-      leadTrack.add<edm::InputTag>("Producer", edm::InputTag("caloRecoTauDiscriminationByLeadingTrackFinding"));
+      leadTrack.add<double>("cut");
+      leadTrack.add<edm::InputTag>("Producer");
       requireLeadTrackCalo.add<edm::ParameterSetDescription>("leadTrack", leadTrack);
     }
     desc.add<edm::ParameterSetDescription>("Prediscriminants", requireLeadTrackCalo);
   }
-  desc.add<edm::InputTag>("CaloTauProducer", edm::InputTag("caloRecoTauProducer"));
   descriptions.add("caloRecoTauDiscriminationByLeadingTrackPtCut", desc);
 }
 
