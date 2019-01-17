@@ -327,7 +327,74 @@ RecoTauCleanerImpl<reco::PFTauCollection>::fillDescriptions(edm::ConfigurationDe
     //     RecoTauTag/RecoTau/python/RecoTauCleanerPlugins.py
     //     however, at this moment (2018-11-09) they do not have any new optional parameters
 
-    desc.addVPSet("cleaners", vps_description_for_cleaners);
+    // the cleaner defaults, as in RecoTauTag/RecoTau/python/RecoTauCleaner_cfi.py
+    std::vector<edm::ParameterSet> default_cleaners;
+    default_cleaners.reserve(7);
+    {
+      edm::ParameterSet cleaner_Charge;
+      cleaner_Charge.addParameter<std::string>("name", "Charge");
+      cleaner_Charge.addParameter<std::string>("plugin", "RecoTauChargeCleanerPlugin");
+      cleaner_Charge.addParameter<int>("passForCharge", 1);
+      cleaner_Charge.addParameter<double>("selectionFailValue", 0);
+      cleaner_Charge.addParameter<std::vector<unsigned int>>("nprongs", {1, 3,});
+      cleaner_Charge.addParameter<double>("tolerance", 0);
+      default_cleaners.push_back(cleaner_Charge);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("name", "HPS_Select");
+      temp2.addParameter<std::string>("plugin", "RecoTauDiscriminantCleanerPlugin");
+      temp2.addParameter<edm::InputTag>("src", edm::InputTag("hpsSelectionDiscriminator"));
+      temp2.addParameter<double>("tolerance", 0);
+      default_cleaners.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("name", "killSoftTwoProngTaus");
+      temp2.addParameter<std::string>("plugin", "RecoTauSoftTwoProngTausCleanerPlugin");
+      temp2.addParameter<double>("minTrackPt", 5.0);
+      temp2.addParameter<double>("tolerance", 0);
+      default_cleaners.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("name", "ChargedHadronMultiplicity");
+      temp2.addParameter<std::string>("plugin", "RecoTauChargedHadronMultiplicityCleanerPlugin");
+      temp2.addParameter<double>("tolerance", 0);
+      default_cleaners.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("name", "Pt");
+      temp2.addParameter<std::string>("plugin", "RecoTauStringCleanerPlugin");
+      temp2.addParameter<std::string>("selectionPassFunction", "-pt()");
+      temp2.addParameter<std::string>("selection", "leadPFCand().isNonnull()");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<double>("tolerance", 0.01);
+      default_cleaners.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("name", "StripMultiplicity");
+      temp2.addParameter<std::string>("plugin", "RecoTauStringCleanerPlugin");
+      temp2.addParameter<std::string>("selectionPassFunction", "-signalPiZeroCandidates().size()");
+      temp2.addParameter<std::string>("selection", "leadPFCand().isNonnull()");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<double>("tolerance", 0);
+      default_cleaners.push_back(temp2);
+    }
+    {
+      edm::ParameterSet temp2;
+      temp2.addParameter<std::string>("name", "CombinedIsolation");
+      temp2.addParameter<std::string>("plugin", "RecoTauStringCleanerPlugin");
+      temp2.addParameter<std::string>("selectionPassFunction", "isolationPFChargedHadrCandsPtSum() + isolationPFGammaCandsEtSum()");
+      temp2.addParameter<std::string>("selection", "leadPFCand().isNonnull()");
+      temp2.addParameter<double>("selectionFailValue", 1000.0);
+      temp2.addParameter<double>("tolerance", 0);
+      default_cleaners.push_back(temp2);
+    }
+
+    desc.addVPSet("cleaners", vps_description_for_cleaners, default_cleaners);
   }
 
   desc.add<int>("verbosity", 0);
