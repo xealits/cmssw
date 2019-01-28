@@ -176,11 +176,7 @@ PATTauDiscriminantCutMultiplexer::PATTauDiscriminantCutMultiplexer(const edm::Pa
     }
     cuts_[category] = std::move(cut);
   }
-<<<<<<< HEAD
-
-=======
   verbosity_ = cfg.getParameter<int>("verbosity");
->>>>>>> test2 passed
   if(verbosity_) std::cout << "constructed " << moduleLabel_ << std::endl;
 }
 
