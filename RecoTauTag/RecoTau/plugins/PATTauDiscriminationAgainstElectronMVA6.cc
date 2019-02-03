@@ -207,6 +207,7 @@ PATTauDiscriminationAgainstElectronMVA6::fillDescriptions(edm::ConfigurationDesc
   edm::ParameterSetDescription desc;
   desc.add<double>("minMVANoEleMatchWOgWOgsfBL", 0.0);
   desc.add<double>("minMVANoEleMatchWgWOgsfBL", 0.0);
+  desc.add<bool>("vetoEcalCracks", true);
   desc.add<bool>("usePhiAtEcalEntranceExtrapolation", false);
   desc.add<std::string>("mvaName_wGwGSF_EC", "gbr_wGwGSF_EC");
   desc.add<double>("minMVAWgWgsfBL", 0.0);

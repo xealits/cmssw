@@ -274,6 +274,7 @@ PFRecoTauDiscriminationAgainstElectronMVA6::fillDescriptions(edm::ConfigurationD
     desc.add<edm::ParameterSetDescription>("Prediscriminants", pset_Prediscriminants);
   }
   desc.add<std::string>("mvaName_NoEleMatch_woGwoGSF_BL", "gbr_NoEleMatch_woGwoGSF_BL");
+  desc.add<bool>("vetoEcalCracks", true);
   desc.add<bool>("usePhiAtEcalEntranceExtrapolation", false);
   desc.add<std::string>("mvaName_NoEleMatch_wGwoGSF_BL", "gbr_NoEleMatch_wGwoGSF_BL");
   desc.add<double>("minMVANoEleMatchWOgWOgsfEC", 0.0);
